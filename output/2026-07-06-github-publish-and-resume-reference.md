@@ -6,8 +6,9 @@
 - Substack draft: output/2026-07-06-substack-draft.md
 - LinkedIn summary draft: output/2026-07-06-linkedin-summary.md
 
-## Why I could not post directly from this session
-The terminal environment for this session does not have git available in PATH, so I could not run a push from here.
+## Publication status
+This workspace has now been pushed to:
+- https://github.com/dippydee0110/DisputeResolution_ChargebackManagementTool
 
 ## Fastest way to publish to GitHub
 1. Open your repository: https://github.com/dippydee0110/DisputeResolution_ChargebackManagementTool
@@ -52,13 +53,13 @@ Use this flow whenever you edit files and want to publish updates:
 Use one or two links:
 
 1. Project repo link:
-   - https://github.com/<your-username>/<your-repo>
+   - https://github.com/dippydee0110/DisputeResolution_ChargebackManagementTool
 
 2. Direct PDF link (best for recruiters):
-   - https://github.com/<your-username>/<your-repo>/blob/main/output/2026-07-06-application-narrative.pdf
+   - https://github.com/dippydee0110/DisputeResolution_ChargebackManagementTool/blob/main/output/2026-07-06-application-narrative.pdf
 
 3. Optional raw PDF link:
-   - https://raw.githubusercontent.com/<your-username>/<your-repo>/main/output/2026-07-06-application-narrative.pdf
+   - https://raw.githubusercontent.com/dippydee0110/DisputeResolution_ChargebackManagementTool/main/output/2026-07-06-application-narrative.pdf
 
 ## Suggested resume bullet
 - Built a multi-party Dispute & Chargeback Management application prototype with customer, merchant, and admin workflows; implemented policy-aware recommendations, evidence operations, and case-level communication-to-closure lifecycle logic.
@@ -67,4 +68,4 @@ Use one or two links:
 - Designed a dispute-operations prototype that improved visibility for merchants and customers through policy-aware communication-to-closure workflows, and enabled KPI measurement including disputed amount at risk, net recovery, closure acceptance rate, escalation rate, and time-to-close.
 
 ## Suggested LinkedIn portfolio line
-- See project narrative and architecture: <repo-link>
+- See project narrative and architecture: https://github.com/dippydee0110/DisputeResolution_ChargebackManagementTool
