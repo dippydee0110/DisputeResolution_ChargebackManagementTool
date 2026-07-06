@@ -1,0 +1,18 @@
+Document: Klarna Claim Investigation Log
+Case ID: CASE-KLARNA-2202
+Payment Method: Klarna
+Source: Klarna Disputes
+Updated On: 2026-07-05
+
+Investigation Scope:
+- Validate order metadata and payment authorization.
+- Compare guest complaint details against merchant records.
+- Verify check-in timeline and service delivery markers.
+
+Working Notes:
+- Claim accepted for investigation.
+- Merchant records requested and partially received.
+- Awaiting final reconciliation of timeline variance.
+
+Current State:
+- Investigation active, pending final determination.

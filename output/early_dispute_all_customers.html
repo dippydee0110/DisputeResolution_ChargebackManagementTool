@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Dispute - All Customers Overview</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color:#0f172a; padding:24px; }
+        .container { max-width:1180px; margin:0 auto; }
+        header { background:#111827; color:white; padding:28px; border-radius:18px; box-shadow:0 12px 30px rgba(15,23,42,0.12); margin-bottom:24px; }
+        h1 { font-size:2.2em; margin-bottom:8px; }
+        p.lead { color:#cbd5e1; line-height:1.8; margin-bottom:16px; }
+        .section { background:white; border-radius:18px; padding:26px; box-shadow:0 10px 24px rgba(15,23,42,0.08); margin-bottom:24px; }
+        .section h2 { color:#111827; margin-bottom:16px; font-size:1.45em; }
+        .section p { color:#475569; line-height:1.75; margin-bottom:16px; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-bottom:22px; }
+        .stat-card { background:#f8fafc; border-radius:16px; padding:20px; border:1px solid #e2e8f0; }
+        .stat-value { font-size:1.9em; font-weight:700; color:#111827; margin-bottom:8px; }
+        .stat-label { color:#475569; font-size:0.95em; }
+        .table { width:100%; border-collapse:collapse; margin-top:8px; }
+        .table th, .table td { padding:14px 16px; border-bottom:1px solid #e2e8f0; text-align:left; }
+        .table th { background:#f1f5f9; color:#0f172a; font-weight:700; }
+        .badge { display:inline-flex; align-items:center; gap:8px; font-size:0.85em; font-weight:700; padding:8px 12px; border-radius:999px; }
+        .badge-critical { background:#fee2e2; color:#b91c1c; }
+        .badge-high { background:#ffedd5; color:#c2410c; }
+        .badge-medium { background:#dbeafe; color:#1e40af; }
+        .badge-low { background:#dcfce7; color:#166534; }
+        .quick-links { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; }
+        .quick-link { color:#2563eb; text-decoration:none; font-weight:700; }
+        @media (max-width:900px) { .stats-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Early Dispute - All Customers Overview</h1>
+            <p class="lead">Aggregated early dispute analysis for customer-facing teams. See customer count, signal severity, and next recommended actions.</p>
+            <div class="quick-links">
+                <a class="quick-link" href="early_dispute_detection.html">Back to Customer Representative View</a>
+                <a class="quick-link" href="early_dispute_merchant_view.html">Merchant Dispute View</a>
+                <a class="quick-link" href="merchant_dashboard.html">Merchant Dashboard</a>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Customers under review</div></div>
+            <div class="stat-card"><div class="stat-value">4</div><div class="stat-label">High / Critical cases</div></div>
+            <div class="stat-card"><div class="stat-value">12</div><div class="stat-label">Detected signals</div></div>
+            <div class="stat-card"><div class="stat-value">68%</div><div class="stat-label">Cases with evidence gaps</div></div>
+        </div>
+
+        <div class="section">
+            <h2>Customer Dispute Status</h2>
+            <p>Review each case by customer stage and link it to the appropriate support script. This view helps agents prioritize follow-up and evidence requests.</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Customer Case</th>
+                        <th>Merchant</th>
+                        <th>Risk</th>
+                        <th>Status</th>
+                        <th>Actionable Next Step</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CASE123</td>
+                        <td>TechStore Pro</td>
+                        <td><span class="badge badge-high">High</span></td>
+                        <td>Evidence Requested</td>
+                        <td>Contact customer for delivery records</td>
+                    </tr>
+                    <tr>
+                        <td>CASE124</td>
+                        <td>FashionHub Online</td>
+                        <td><span class="badge badge-high">High</span></td>
+                        <td>Review in progress</td>
+                        <td>Review merchant refund request</td>
+                    </tr>
+                    <tr>
+                        <td>CASE127</td>
+                        <td>TravelSmart Agency</td>
+                        <td><span class="badge badge-critical">Critical</span></td>
+                        <td>Urgent hold recommended</td>
+                        <td>Escalate to dispute team and collect proof</td>
+                    </tr>
+                    <tr>
+                        <td>CASE128</td>
+                        <td>GardenPro Supplies</td>
+                        <td><span class="badge badge-medium">Medium</span></td>
+                        <td>Monitoring</td>
+                        <td>Request merchant service confirmation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Evidence Action Summary</h2>
+            <p>The following actions are suggested for customer-facing teams based on current evidence gaps and dispute severity.</p>
+            <ul>
+                <li><strong>Critical cases:</strong> Immediately request signed delivery receipts, merchant authorization data, and customer communication logs.</li>
+                <li><strong>High cases:</strong> Obtain transaction details and invoice history to strengthen representment materials.</li>
+                <li><strong>Medium cases:</strong> Confirm delivery status and follow up with the customer for any unverified details.</li>
+                <li><strong>Low cases:</strong> Document the case as routine and provide standard support while monitoring for escalation.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Risk Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color:#0f172a; padding:24px; }
+        .container { max-width:1200px; margin:0 auto; }
+        header { background:white; padding:28px; border-radius:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:28px; border-left:8px solid #2563eb; }
+        h1 { font-size:2.3em; color:#1e3a8a; margin-bottom:8px; }
+        p.lead { color:#475569; line-height:1.8; margin-bottom:18px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:20px; }
+        .summary-card { background:white; border-radius:14px; padding:16px; box-shadow:0 4px 12px rgba(15,23,42,0.06); }
+        .summary-title { color:#475569; font-size:0.8em; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px; }
+        .summary-value { font-size:1.8em; font-weight:700; color:#111827; }
+        .summary-subtext { margin-top:8px; color:#64748b; font-size:0.85em; }
+        .section { background:white; border-radius:18px; padding:26px; box-shadow:0 10px 24px rgba(15,23,42,0.06); margin-bottom:28px; }
+        .section h2 { color:#1e40af; font-size:1.5em; margin-bottom:16px; }
+        .section p { color:#475569; line-height:1.7; margin-bottom:16px; }
+        .action-list { list-style:none; padding-left:0; display:grid; gap:14px; }
+        .action-item { background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px; padding:18px; }
+        .action-item strong { color:#1d4ed8; }
+        .action-button { margin-top:16px; display:inline-block; padding:12px 20px; border:none; border-radius:12px; cursor:pointer; font-weight:700; color:white; background:#2563eb; transition:transform 0.2s; }
+        .action-button:hover { transform:translateY(-1px); }
+        .table { width:100%; border-collapse:collapse; margin-top:16px; font-size:0.88em; }
+        .table th, .table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+        .table th { background:#f8fafc; color:#0f172a; font-weight:700; font-size:0.9em; }
+        .badge { display:inline-block; padding:5px 12px; border-radius:999px; font-size:0.75em; font-weight:700; color:white; }
+        .badge-critical { background:#dc2626; }
+        .badge-high { background:#f97316; }
+        .badge-medium { background:#fbbf24; color:#0f172a; }
+        .badge-low { background:#10b981; }
+        .badge-open { background:#2563eb; }
+        .button-group { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+        .cta-button { background:#10b981; color:white; padding:12px 20px; border:none; border-radius:14px; cursor:pointer; font-weight:700; }
+        .cta-button.secondary { background:#0f766e; }
+        .case-tabs { display:flex; gap:2px; margin-bottom:16px; border-bottom:1px solid #e2e8f0; }
+        .case-tab { padding:12px 20px; cursor:pointer; border:none; background:transparent; color:#475569; font-weight:600; border-bottom:3px solid transparent; }
+        .case-tab.active { color:#1e3a8a; border-bottom-color:#2563eb; }
+        .status-dropdown { padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; background:white; cursor:pointer; font-weight:600; font-size:0.9em; }
+        .status-dropdown:hover { background:#f8fafc; }
+        .action-bar { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+        .status-box strong { color:#111827; }
+        .alert-banner { background:#e0f2fe; border-left:6px solid #0ea5e9; border-radius:12px; padding:18px; color:#0c4a6e; margin-bottom:24px; }
+        .evidence-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+        .evidence-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px; }
+        .evidence-card strong { display:block; margin-bottom:8px; color:#111827; }
+        .evidence-card p { color:#475569; font-size:0.95em; margin-bottom:10px; }
+        .evidence-card .file-icon { font-size:2em; margin-bottom:8px; }
+        .evidence-btn { background:#2563eb; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9em; margin-right:8px; margin-top:8px; }
+        .evidence-btn:hover { background:#1d4ed8; }
+        .evidence-btn.review { background:#10b981; }
+        .evidence-btn.review:hover { background:#059669; }
+        .evidence-btn.submit { background:#dc2626; }
+        .evidence-btn.submit:hover { background:#b91c1c; }
+        .debit { color:#dc2626; font-weight:700; }
+        .credit { color:#10b981; font-weight:700; }
+        .expandable-row { cursor:pointer; background:#f8fafc; }
+        .cycle-status { display:none; background:#eff6ff; border-top:2px solid #2563eb; padding:16px; margin-top:0; }
+        .cycle-status.active { display:table-row; }
+        .cycle-timeline { display:flex; flex-direction:column; gap:12px; }
+        .cycle-step { display:flex; gap:12px; align-items:flex-start; padding:10px; background:white; border-left:4px solid #cbd5e1; border-radius:8px; font-size:0.85em; }
+        .cycle-step.active { border-left-color:#2563eb; background:#eff6ff; }
+        .cycle-step.completed { border-left-color:#10b981; background:#f0fdf4; }
+        .step-number { background:#cbd5e1; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:700; font-size:0.9em; }
+        .cycle-step.active .step-number { background:#2563eb; }
+        .cycle-step.completed .step-number { background:#10b981; }
+        .step-content { flex:1; }
+        .step-content strong { display:block; margin-bottom:3px; color:#111827; font-size:0.95em; }
+        .step-content p { color:#475569; font-size:0.85em; margin:0; }
+        @media (max-width: 860px) { .summary-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Merchant Risk & Operations Dashboard</h1>
+            <p class="lead">Focused drilldown for the selected merchant, with unresolved case workflow, evidence actions, issuer simulation, and marketplace case creation support.</p>
+            <div class="alert-banner" id="merchantBanner">Loading merchant dashboard...</div>
+        </header>
+
+        <div class="summary-grid" id="merchantSummary"></div>
+
+        <div class="section">
+            <h2>Cases & Resolutions</h2>
+            <p>Track dispute status and manage case resolutions. Click case ID to view chargeback lifecycle and outcome details.</p>
+            
+            <div class="action-bar">
+                <button class="cta-button" style="background:#059669; flex:0 0 auto;" onclick="createMarketplaceCase()">+ Simulate Case</button>
+                <select class="status-dropdown" id="statusDropdown" onchange="simulateStatusChange()">
+                    <option value="">💬 Simulate Status Change...</option>
+                    <option value="Representment Ready">→ Representment Ready</option>
+                    <option value="Investigating">→ Investigating</option>
+                    <option value="Reviewing Evidence">→ Reviewing Evidence</option>
+                    <option value="Escalated">→ Escalated</option>
+                    <option value="Won">→ Won (Merchant)</option>
+                    <option value="Lost">→ Lost (Customer)</option>
+                    <option value="Timeout">→ Timeout (No Response)</option>
+                </select>
+                <button class="cta-button" onclick="markSelectedEvidenceReady()" style="background:#2563eb; flex:0 0 auto;">✓ Mark Evidence Ready</button>
+            </div>
+
+            <div class="case-tabs">
+                <button class="case-tab active" onclick="switchCaseTab('unresolved')">Open Cases</button>
+                <button class="case-tab" onclick="switchCaseTab('resolved')">Resolved Cases</button>
+            </div>
+
+            <table class="table" id="merchantCasesTable">
+                <thead>
+                    <tr>
+                        <th style="width:30px;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                        <th>Case ID</th>
+                        <th>Amount</th>
+                        <th>Reason Code</th>
+                        <th>Initiated</th>
+                        <th>Risk</th>
+                        <th>Status</th>
+                        <th>Days</th>
+                        <th>Amount Due/Owed</th>
+                        <th>Fee</th>
+                        <th>Payout</th>
+                    </tr>
+                </thead>
+                <tbody id="merchantCasesBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Evidence Documents</h2>
+            <p>Manage and submit evidence documents to support dispute defense. Merchants can upload, review, and submit documents directly to the issuer.</p>
+            
+            <div style="background:#eff6ff; border-left:4px solid #2563eb; border-radius:12px; padding:14px; margin-bottom:18px;">
+                <strong>Document Types Accepted:</strong> Transaction records, delivery proof, authorization logs, customer communications, merchant policies, payment receipts, shipping evidence, refund records, and fraud investigation reports.
+            </div>
+
+            <div class="evidence-grid" id="evidenceDocuments"></div>
+            
+            <div style="margin-top:20px; padding:18px; background:#f8fafc; border-radius:14px; border:1px solid #e2e8f0;">
+                <h3 style="color:#1e3a8a; margin-bottom:12px;">Add New Evidence Document</h3>
+                <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="flex:1; min-width:200px;">
+                        <label style="display:block; color:#475569; font-weight:600; margin-bottom:6px;">Document Type</label>
+                        <select id="evidenceType" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                            <option>Transaction Record</option>
+                            <option>Delivery Proof</option>
+                            <option>Authorization Log</option>
+                            <option>Customer Communication</option>
+                            <option>Merchant Policy</option>
+                            <option>Payment Receipt</option>
+                            <option>Shipping Evidence</option>
+                            <option>Refund Record</option>
+                            <option>Fraud Investigation Report</option>
+                            <option>Other Documentation</option>
+                        </select>
+                    </div>
+                    <button class="evidence-btn" onclick="addEvidenceDocument()">Upload Document</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Recommended Merchant Actions</h2>
+            <ul class="action-list">
+                <li class="action-item"><strong>Step 1:</strong> Confirm transaction details, capture payment authorization logs, and flag unusual routing or account changes.</li>
+                <li class="action-item"><strong>Step 2:</strong> Prioritize high/critical cases for immediate evidence collection and escalate cases with issuer requests.</li>
+                <li class="action-item"><strong>Step 3:</strong> Use the simulation tools at the top to practice issuer responses and bulk marketplace case actions.</li>
+                <li class="action-item"><strong>Step 4:</strong> Track resolution progress and update case status to keep the merchant compliant with dispute deadlines.</li>
+            </ul>
+            <div class="status-box" id="simulationResult">No simulation has been executed yet.</div>
+        </div>
+    </div>
+
+    <script>
+        const cases = JSON.parse(localStorage.getItem('casesData')) || [
+            { caseId: 'CASE123', merchant: 'TechStore Pro', amount: 134.50, transactionDate: '2026-06-01', complaintDate: '2026-06-03', reasonCode: '4837', reasonDesc: 'Fraud - Cardholder Does Not Recognize', riskScore: 0.75, status: 'Representment Ready', fraudIndicator: true, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-03', note: 'Customer filed claim'}] },
+            { caseId: 'CASE124', merchant: 'FashionHub Online', amount: 189.99, transactionDate: '2026-06-02', complaintDate: '2026-06-05', reasonCode: '4855', reasonDesc: 'Goods/Services Not Provided', riskScore: 0.62, status: 'Investigating', fraudIndicator: false, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-05', note: 'Customer filed claim'}] },
+            { caseId: 'CASE125', merchant: 'ElectroWorld', amount: 249.99, transactionDate: '2026-06-04', complaintDate: '2026-06-08', reasonCode: '4863', reasonDesc: 'Cardholder Does Not Recognize', riskScore: 0.82, status: 'Escalated', fraudIndicator: true, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-08', note: 'Customer filed claim'}] },
+            { caseId: 'CASE126', merchant: 'HealthPlus Pharmacy', amount: 49.99, transactionDate: '2026-06-10', complaintDate: '2026-06-12', reasonCode: '4840', reasonDesc: 'Canceled Recurring Transaction', riskScore: 0.28, status: 'Won', fraudIndicator: false, chargebackEntered: '2026-06-15', estimatedPayout: '2026-06-26', payoutAmount: 47.01, merchantFee: 2.98, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-12', note: 'Customer filed claim'}, {status: 'Merchant Win - Evidence Upheld', date: '2026-06-15', note: 'Issuer reversed chargeback'}] },
+            { caseId: 'CASE127', merchant: 'TravelSmart Agency', amount: 599.00, transactionDate: '2026-06-07', complaintDate: '2026-06-11', reasonCode: '4837', reasonDesc: 'Fraudulent Transaction', riskScore: 0.91, status: 'Reviewing Evidence', fraudIndicator: true, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-11', note: 'Customer filed claim'}] },
+            { caseId: 'CASE128', merchant: 'GardenPro Supplies', amount: 72.20, transactionDate: '2026-06-08', complaintDate: '2026-06-14', reasonCode: '4855', reasonDesc: 'Service Not Provided', riskScore: 0.45, status: 'Brand Review', fraudIndicator: false, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-14', note: 'Customer filed claim'}] },
+            { caseId: 'CASE129', merchant: 'PayFast Labs', amount: 310.25, transactionDate: '2026-06-05', complaintDate: '2026-06-10', reasonCode: '4860', reasonDesc: 'Transaction Not Recognized', riskScore: 0.68, status: 'Chargeback Filed', fraudIndicator: true, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-10', note: 'Customer filed claim'}] },
+            { caseId: 'CASE130', merchant: 'TechStore Pro', amount: 89.50, transactionDate: '2026-06-12', complaintDate: '2026-06-14', reasonCode: '4855', reasonDesc: 'Service Not Provided', riskScore: 0.38, status: 'Lost', fraudIndicator: false, chargebackEntered: '2026-06-17', estimatedPayout: '2026-06-24', amountToCustomer: 89.50, merchantFee: 3.60, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-14', note: 'Customer filed claim'}, {status: 'Customer Win - Chargeback Sustained', date: '2026-06-17', note: 'Issuer sided with customer'}] },
+            { caseId: 'CASE131', merchant: 'TechStore Pro', amount: 156.75, transactionDate: '2026-06-13', complaintDate: '2026-06-15', reasonCode: '4837', reasonDesc: 'Fraud', riskScore: 0.55, status: 'Customer Response', fraudIndicator: true, statusHistory: [{status: 'Dispute Initiated', date: '2026-06-15', note: 'Customer filed claim'}] }
+        ];
+
+        let currentTab = 'unresolved';
+
+        const merchant = getSelectedMerchant();
+        const selectedMerchant = merchant;
+        let merchantCases = cases.filter(c => c.merchant === merchant);
+
+        function getSelectedMerchant() {
+            const query = new URLSearchParams(window.location.search);
+            const param = query.get('merchant');
+            if (param) return decodeURIComponent(param);
+            return localStorage.getItem('selectedMerchant') || 'Unknown Merchant';
+        }
+
+        function getRiskTier(score) {
+            if (score >= 0.7) return 'critical';
+            if (score >= 0.5) return 'high';
+            if (score >= 0.3) return 'medium';
+            return 'low';
+        }
+
+        function getBadgeLabel(score) {
+            if (score >= 0.7) return '<span class="badge badge-critical">Critical</span>';
+            if (score >= 0.5) return '<span class="badge badge-high">High</span>';
+            if (score >= 0.3) return '<span class="badge badge-medium">Medium</span>';
+            return '<span class="badge badge-low">Low</span>';
+        }
+
+        function updateMerchantBanner() {
+            const banner = document.getElementById('merchantBanner');
+            if (!merchantCases.length) {
+                banner.innerHTML = `No active dispute cases were found for <strong>${selectedMerchant}</strong>. Use the Admin Dashboard to navigate to another merchant.`;
+                document.getElementById('merchantSummary').style.display = 'none';
+                document.getElementById('riskSection').style.display = 'none';
+                document.getElementById('merchantCasesTable').style.display = 'none';
+                return;
+            }
+
+            const exposure = merchantCases.reduce((sum, item) => sum + item.amount, 0);
+            banner.innerHTML = `<strong>${selectedMerchant}</strong> is currently managing <strong>${merchantCases.length}</strong> open dispute case(s) with total disputed exposure of <strong>$${exposure.toLocaleString('en-US', {maximumFractionDigits:2})}</strong>.`;
+        }
+
+        function renderSummaryCards() {
+            if (!merchantCases.length) return;
+            const total = merchantCases.length;
+            const critical = merchantCases.filter(c => c.riskScore >= 0.7).length;
+            const high = merchantCases.filter(c => c.riskScore >= 0.5 && c.riskScore < 0.7).length;
+            const medium = merchantCases.filter(c => c.riskScore >= 0.3 && c.riskScore < 0.5).length;
+            const exposure = merchantCases.reduce((sum, c) => sum + c.amount, 0);
+            const openCompliance = merchantCases.filter(c => ['Escalated', 'Reviewing Evidence', 'Chargeback Filed', 'Representment Ready'].includes(c.status)).length;
+            const avgRisk = Math.round(merchantCases.reduce((sum, c) => sum + c.riskScore, 0) / total * 100);
+
+            const container = document.getElementById('merchantSummary');
+            container.innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-title">Merchant</div>
+                    <div class="summary-value">${selectedMerchant}</div>
+                    <div class="summary-subtext">Selected merchant for drilldown and case operations.</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Total Dispute Cases</div>
+                    <div class="summary-value">${total}</div>
+                    <div class="summary-subtext">Active disputed cases for this merchant.</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">High/Critical Cases</div>
+                    <div class="summary-value">${critical + high}</div>
+                    <div class="summary-subtext">Cases requiring immediate escalation or review.</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Total Exposure</div>
+                    <div class="summary-value">$${exposure.toLocaleString('en-US', {maximumFractionDigits:2})}</div>
+                    <div class="summary-subtext">Sum of disputed amounts for this merchant.</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Average Risk Score</div>
+                    <div class="summary-value">${avgRisk}%</div>
+                    <div class="summary-subtext">Average risk score for open cases.</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Compliance Escalations</div>
+                    <div class="summary-value">${openCompliance}</div>
+                    <div class="summary-subtext">Cases with escalation or evidence review status.</div>
+                </div>
+            `;
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            try { return new Date(d).toISOString().split('T')[0]; } catch(e) { return d; }
+        }
+
+        function calcMerchantFee(amount) {
+            // Example marketplace fee: 3% + $0.30
+            return Math.round((amount * 0.03 + 0.30) * 100) / 100;
+        }
+
+        function addBusinessDays(date, days) {
+            const result = new Date(date);
+            let added = 0;
+            while (added < days) {
+                result.setDate(result.getDate() + 1);
+                const day = result.getDay();
+                if (day !== 0 && day !== 6) added++;
+            }
+            return result;
+        }
+
+        function switchCaseTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.case-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderMerchantCases();
+        }
+
+        function simulateStatusChange() {
+            const dropdown = document.getElementById('statusDropdown');
+            const newStatus = dropdown.value;
+            if (!newStatus) return;
+            
+            const ids = getSelectedCaseIds();
+            if (!ids.length) {
+                alert('Select at least one case to change status');
+                dropdown.value = '';
+                return;
+            }
+
+            ids.forEach(caseId => {
+                const caseRecord = merchantCases.find(c => c.caseId === caseId);
+                if (caseRecord) {
+                    const today = new Date().toISOString().split('T')[0];
+                    caseRecord.status = newStatus;
+                    
+                    if (newStatus === 'Won') {
+                        caseRecord.chargebackEntered = today;
+                        const fee = calcMerchantFee(caseRecord.amount);
+                        caseRecord.merchantFee = fee;
+                        caseRecord.payoutAmount = Math.round((caseRecord.amount - fee) * 100) / 100;
+                        caseRecord.estimatedPayout = addBusinessDays(new Date(), 5).toISOString().split('T')[0];
+                    } else if (newStatus === 'Lost') {
+                        caseRecord.chargebackEntered = today;
+                        const fee = calcMerchantFee(caseRecord.amount);
+                        caseRecord.merchantFee = fee;
+                        caseRecord.amountToCustomer = Math.round(caseRecord.amount * 100) / 100;
+                        caseRecord.estimatedPayout = addBusinessDays(new Date(), 3).toISOString().split('T')[0];
+                    } else if (newStatus === 'Timeout') {
+                        caseRecord.chargebackEntered = today;
+                        const fee = calcMerchantFee(caseRecord.amount);
+                        caseRecord.merchantFee = fee;
+                        caseRecord.amountToCustomer = Math.round(caseRecord.amount * 100) / 100;
+                        caseRecord.estimatedPayout = addBusinessDays(new Date(), 3).toISOString().split('T')[0];
+                    }
+                }
+            });
+            
+            saveCases();
+            renderMerchantCases();
+            dropdown.value = '';
+        }
+
+        function renderMerchantCases() {
+            const body = document.getElementById('merchantCasesBody');
+            body.innerHTML = '';
+            
+            // Filter cases based on tab
+            const resolvedStatuses = ['Won', 'Lost', 'Timeout'];
+            const filtered = currentTab === 'resolved' 
+                ? merchantCases.filter(c => resolvedStatuses.includes(c.status))
+                : merchantCases.filter(c => !resolvedStatuses.includes(c.status));
+
+            filtered.forEach((c, idx) => {
+                const age = Math.round((new Date(c.complaintDate) - new Date(c.transactionDate)) / (1000 * 60 * 60 * 24));
+                const disputeInit = c.disputeInitiation || c.complaintDate || '-';
+                const chargebackEntered = c.chargebackEntered || '-';
+                const amountDue = c.amountToCustomer ? ('<span class="debit">(' + c.amountToCustomer.toFixed(2) + ')</span>') : (c.payoutAmount ? '<span class="credit">$' + c.payoutAmount.toFixed(2) + '</span>' : '-');
+                const feeDisplay = c.merchantFee ? (c.payoutAmount ? '<span class="credit">$' + c.merchantFee.toFixed(2) + '</span>' : '<span class="debit">(' + c.merchantFee.toFixed(2) + ')</span>') : '-';
+                const estPayout = c.estimatedPayout || '-';
+                const reasonCodeShort = (c.reasonCode || '').substring(0, 6);
+
+                const row = document.createElement('tr');
+                row.className = 'expandable-row';
+                row.innerHTML = `
+                    <td><input type="checkbox" class="case-checkbox" data-case-id="${c.caseId}" value="${idx}"></td>
+                    <td><span onclick="toggleCycleStatus('${c.caseId}')" style="cursor:pointer; text-decoration:underline; color:#2563eb;">⬇ ${c.caseId}</span></td>
+                    <td>$${c.amount.toFixed(2)}</td>
+                    <td><span title="${c.reasonDesc}">${reasonCodeShort}</span></td>
+                    <td>${formatDate(disputeInit)}</td>
+                    <td>${formatDate(chargebackEntered)}</td>
+                    <td>${getBadgeLabel(c.riskScore)}</td>
+                    <td><span class="badge badge-open">${c.status}</span></td>
+                    <td>${age}d</td>
+                    <td>${amountDue}</td>
+                    <td>${feeDisplay}</td>
+                    <td>${estPayout}</td>
+                `;
+                body.appendChild(row);
+
+                const cycleRow = document.createElement('tr');
+                cycleRow.className = 'cycle-status';
+                cycleRow.id = 'cycle-' + c.caseId;
+                cycleRow.innerHTML = `
+                    <td colspan="12">
+                        <div class="cycle-timeline">
+                            ${getChargebackCycleTimeline(c)}
+                        </div>
+                    </td>
+                `;
+                body.appendChild(cycleRow);
+            });
+        }
+
+        function getChargebackCycleTimeline(c) {
+            const issuerReasonCodes = {
+                'agree': ['Merchant submitted evidence supporting transaction', 'Valid cardholder authorization confirmed', 'Merchant compliance verified', 'Transaction properly disclosed'],
+                'reject': ['Cardholder disputes transaction validity', 'Evidence insufficient to reverse chargeback', 'Customer claim substantiated by issuer', 'Merchant processing error identified'],
+                'timeout': ['Merchant failed to respond in time', 'No evidence submitted by deadline', 'Automatic resolution in customer favor']
+            };
+
+            // Build complete Mastercard chargeback lifecycle
+            const lifeycyclePlan = [
+                { 
+                    phase: 'Dispute Initiated',
+                    date: c.complaintDate,
+                    icon: '📋',
+                    desc: 'Cardholder files dispute with issuer bank',
+                    statusMatch: ['Representment Ready', 'Investigating', 'Escalated', 'Customer Response', 'Reviewing Evidence', 'Chargeback Filed', 'Brand Review', 'Marketplace Case Created']
+                },
+                {
+                    phase: 'Chargeback Filed',
+                    date: c.complaintDate,
+                    icon: '⚠️',
+                    desc: 'Issuer initiates formal chargeback; 7-10 business day representment window opens',
+                    statusMatch: ['Investigating', 'Escalated', 'Reviewing Evidence', 'Chargeback Filed', 'Brand Review']
+                },
+                {
+                    phase: 'Representment Submitted',
+                    date: c.disputeInitiation || c.chargebackEntered || '-',
+                    icon: '📤',
+                    desc: 'Merchant submits evidence and response documentation',
+                    statusMatch: ['Reviewing Evidence', 'Brand Review', 'Issuer Agrees (Merchant Win)', 'Issuer Rejects (Customer Win)', 'Chargeback Timeout - Merchant Inaction (Customer Paid)']
+                },
+                {
+                    phase: 'Issuer Review',
+                    date: c.chargebackEntered || '-',
+                    icon: '🔍',
+                    desc: 'Issuer evaluates merchant evidence against cardholder claim (5-15 business days)',
+                    statusMatch: ['Issuer Agrees (Merchant Win)', 'Issuer Rejects (Customer Win)', 'Chargeback Timeout - Merchant Inaction (Customer Paid)']
+                },
+                {
+                    phase: 'Resolution & Settlement',
+                    date: c.estimatedPayout || '-',
+                    icon: c.status.includes('Merchant Win') ? '✓' : (c.status.includes('Customer Win') ? '✗' : '⏱'),
+                    desc: c.status.includes('Merchant Win') ? 'Chargeback reversed; funds returned to merchant (minus fee)' : 
+                          (c.status.includes('Customer Win') ? 'Chargeback sustained; customer refunded (fee deducted from merchant)' : 
+                          'Merchant inaction; automatic refund processed (fee deducted)'),
+                    statusMatch: ['Issuer Agrees (Merchant Win)', 'Issuer Rejects (Customer Win)', 'Chargeback Timeout - Merchant Inaction (Customer Paid)']
+                }
+            ];
+
+            // Determine which phases have been completed
+            const completed = [];
+            const phaseMap = {
+                'Dispute Initiated': 0,
+                'Chargeback Filed': 1,
+                'Representment Submitted': 2,
+                'Issuer Review': 3,
+                'Resolution & Settlement': 4
+            };
+
+            // Mark phases completed based on current status
+            const statusPhaseMap = {
+                'Representment Ready': 1,
+                'Investigating': 1,
+                'Escalated': 2,
+                'Customer Response': 1,
+                'Reviewing Evidence': 2,
+                'Chargeback Filed': 1,
+                'Brand Review': 2,
+                'Marketplace Case Created': 1,
+                'Won': 4,
+                'Lost': 4,
+                'Timeout': 4,
+                'Issuer Agrees (Merchant Win)': 4,
+                'Issuer Rejects (Customer Win)': 4,
+                'Chargeback Timeout - Merchant Inaction (Customer Paid)': 4
+            };
+
+            const currentPhase = statusPhaseMap[c.status] || 0;
+
+            return lifeycyclePlan.map((phase, i) => {
+                const isCompleted = i < currentPhase;
+                const isCurrent = i === currentPhase;
+                let reasonText = phase.desc;
+
+                // Add issuer reason for final phase if resolved
+                const resolvedStatuses = ['Won', 'Lost', 'Timeout', 'Issuer Agrees (Merchant Win)', 'Issuer Rejects (Customer Win)', 'Chargeback Timeout - Merchant Inaction (Customer Paid)'];
+                if (i === 4 && resolvedStatuses.includes(c.status)) {
+                    if (c.status === 'Won' || c.status.includes('Merchant Win')) {
+                        const reasons = issuerReasonCodes.agree;
+                        reasonText += ' — ' + reasons[Math.floor(Math.random() * reasons.length)];
+                    } else if (c.status === 'Lost' || c.status.includes('Customer Win')) {
+                        const reasons = issuerReasonCodes.reject;
+                        reasonText += ' — ' + reasons[Math.floor(Math.random() * reasons.length)];
+                    } else if (c.status === 'Timeout' || c.status.includes('Timeout')) {
+                        const reasons = issuerReasonCodes.timeout;
+                        reasonText += ' — ' + reasons[Math.floor(Math.random() * reasons.length)];
+                    }
+                }
+
+                let bgColor = '#cbd5e1';
+                if (isCompleted) bgColor = '#10b981';
+                if (isCurrent) bgColor = '#2563eb';
+
+                return `
+                    <div class="cycle-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'active' : ''}">
+                        <div class="step-number" style="background:${bgColor};">${phase.icon}</div>
+                        <div class="step-content">
+                            <strong>${phase.phase}</strong>
+                            <p>${reasonText}</p>
+                            ${phase.date && phase.date !== '-' ? `<p style="color:#6b7280; font-size:0.85em; margin-top:4px;">📅 ${phase.date}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCycleStatus(caseId) {
+            const row = document.getElementById('cycle-' + caseId);
+            if (row) {
+                row.classList.toggle('active');
+                const btn = event.target;
+                btn.textContent = row.classList.contains('active') ? '⬆ ' + caseId : '⬇ ' + caseId;
+            }
+        }
+
+        function renderRiskChart() {
+            return; // Risk Profile chart removed
+        }
+
+        function getSelectedCaseIds() {
+            const checkboxes = document.querySelectorAll('.case-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.getAttribute('data-case-id'));
+        }
+
+        function toggleSelectAll(checkbox) {
+            const cbs = document.querySelectorAll('.case-checkbox');
+            cbs.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function markSelectedEvidenceReady() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => {
+                const record = merchantCases.find(c => c.caseId === id);
+                if (record) record.status = 'Evidence Ready';
+            });
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`${ids.length} case(s) marked as evidence ready.`);
+        }
+
+        function markEvidenceReady(caseId) {
+            const record = merchantCases.find(c => c.caseId === caseId);
+            if (!record) return;
+            record.status = 'Evidence Ready';
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`Case ${caseId} marked as evidence ready. Prepare documentation for issuer review.`);
+        }
+
+        function getSelectedCaseIds() {
+            const checkboxes = document.querySelectorAll('.case-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.getAttribute('data-case-id'));
+        }
+
+        function toggleSelectAll(checkbox) {
+            const cbs = document.querySelectorAll('.case-checkbox');
+            cbs.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function markSelectedEvidenceReady() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => {
+                const record = merchantCases.find(c => c.caseId === id);
+                if (record) record.status = 'Evidence Ready';
+            });
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`${ids.length} case(s) marked as evidence ready.`);
+        }
+
+        function simulateSelectedIssuerAgree() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateIssuerAgree(id));
+        }
+
+        function simulateSelectedIssuerReject() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateIssuerReject(id));
+        }
+
+        function simulateSelectedTimeout() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateTimeout(id));
+        }
+
+        function simulateSelectedIssuerAgree() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateIssuerAgree(id));
+        }
+
+        function simulateSelectedIssuerReject() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateIssuerReject(id));
+        }
+
+        function simulateSelectedTimeout() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            ids.forEach(id => simulateTimeout(id));
+        }
+
+        function simulateIssuerAgree(caseId) {
+            const record = merchantCases.find(c => c.caseId === caseId);
+            if (!record) return;
+            const today = new Date().toISOString().split('T')[0];
+            record.status = 'Won';
+            record.chargebackEntered = today;
+            const fee = calcMerchantFee(record.amount);
+            record.merchantFee = fee;
+            record.payoutAmount = Math.round((record.amount - fee) * 100) / 100;
+            const payDate = addBusinessDays(new Date(), 5);
+            record.estimatedPayout = payDate.toISOString().split('T')[0];
+            
+            // Add to status history
+            if (!record.statusHistory) record.statusHistory = [{status: 'Dispute Initiated', date: record.complaintDate, note: 'Customer filed claim'}];
+            record.statusHistory.push({ status: 'Merchant Win - Evidence Upheld', date: today, note: 'Issuer reversed chargeback - Merchant evidence accepted' });
+            
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`Merchant Won ${caseId}. You will receive $${record.payoutAmount} (after chargeback fee of $${fee} refund). Estimated payout ${record.estimatedPayout}.`);
+        }
+
+        function simulateIssuerReject(caseId) {
+            const record = merchantCases.find(c => c.caseId === caseId);
+            if (!record) return;
+            const today = new Date().toISOString().split('T')[0];
+            record.status = 'Lost';
+            record.chargebackEntered = today;
+            const fee = calcMerchantFee(record.amount);
+            record.merchantFee = fee;
+            // Amount to be paid out to customer
+            record.amountToCustomer = Math.round(record.amount * 100) / 100;
+            const payDate = addBusinessDays(new Date(), 3);
+            record.estimatedPayout = payDate.toISOString().split('T')[0];
+            
+            // Add to status history
+            if (!record.statusHistory) record.statusHistory = [{status: 'Dispute Initiated', date: record.complaintDate, note: 'Customer filed claim'}];
+            record.statusHistory.push({ status: 'Customer Win - Chargeback Sustained', date: today, note: 'Issuer sided with customer - Merchant claim rejected' });
+            
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`You Lost ${caseId}. Customer will be refunded $${record.amountToCustomer}. Chargeback fee $${fee} is DEDUCTED from your account. Estimated settlement ${record.estimatedPayout}.`);
+        }
+
+        function simulateTimeout(caseId) {
+            const record = merchantCases.find(c => c.caseId === caseId);
+            if (!record) return;
+            const today = new Date().toISOString().split('T')[0];
+            record.status = 'Timeout';
+            record.chargebackEntered = today;
+            const fee = calcMerchantFee(record.amount);
+            record.merchantFee = fee;
+            record.amountToCustomer = Math.round(record.amount * 100) / 100;
+            const payDate = addBusinessDays(new Date(), 3);
+            record.estimatedPayout = payDate.toISOString().split('T')[0];
+            
+            // Add to status history
+            if (!record.statusHistory) record.statusHistory = [{status: 'Dispute Initiated', date: record.complaintDate, note: 'Customer filed claim'}];
+            record.statusHistory.push({ status: 'Merchant Response Deadline Missed', date: today, note: 'No representment submitted - Automatic refund processed' });
+            
+            saveCases();
+            renderMerchantCases();
+            setSimulationResult(`Timeout - No Response for ${caseId}. Customer paid $${record.amountToCustomer}. Chargeback fee $${fee} is DEDUCTED from your account. Estimated settlement ${record.estimatedPayout}.`);
+        }
+
+        function createMarketplaceCase() {
+            const complaintDate = new Date().toISOString().split('T')[0];
+            const newCase = {
+                caseId: `MKT-${Date.now().toString().slice(-6)}`,
+                merchant: selectedMerchant,
+                amount: Math.round((Math.random() * 850 + 120) * 100) / 100,
+                transactionDate: new Date().toISOString().split('T')[0],
+                complaintDate: complaintDate,
+                reasonCode: '4855',
+                reasonDesc: 'Marketplace Dispute Created',
+                riskScore: 0.55,
+                status: 'Marketplace Case Created',
+                fraudIndicator: false,
+                statusHistory: [{status: 'Dispute Initiated', date: complaintDate, note: 'Customer filed claim'}]
+            };
+            cases.push(newCase);
+            merchantCases.push(newCase);
+            saveCases();
+            renderMerchantCases();
+            renderSummaryCards();
+            renderRiskChart();
+            setSimulationResult(`New marketplace case ${newCase.caseId} created successfully for ${selectedMerchant}.`);
+        }
+
+        function simulateIssuerResolution() {
+            if (!merchantCases.length) {
+                setSimulationResult('No merchant cases are available to simulate issuer resolution.');
+                return;
+            }
+            const pending = merchantCases.find(c => !['Issuer Agrees (Merchant Win)','Issuer Rejects (Customer Win)','Chargeback Timeout - Merchant Inaction (Customer Paid)'].includes(c.status));
+            if (!pending) {
+                setSimulationResult('Every case has already been resolved. No action required.');
+                return;
+            }
+            // Default to an agree simulation for the first pending case to demonstrate flow
+            simulateIssuerAgree(pending.caseId);
+        }
+
+        function saveCases() {
+            localStorage.setItem('casesData', JSON.stringify(cases));
+        }
+
+        function setSimulationResult(message) {
+            document.getElementById('simulationResult').textContent = message;
+        }
+
+        // Evidence Management
+        const sampleEvidenceDocuments = [
+            { id: 'DOC001', type: 'Transaction Record', filename: 'transaction_CASE123_20260603.pdf', uploadDate: '2026-06-24', size: '245 KB', status: 'Submitted' },
+            { id: 'DOC002', type: 'Delivery Proof', filename: 'delivery_proof_CASE124_20260605.pdf', uploadDate: '2026-06-24', size: '512 KB', status: 'Pending Review' },
+            { id: 'DOC003', type: 'Authorization Log', filename: 'auth_logs_CASE123_20260601.xlsx', uploadDate: '2026-06-24', size: '128 KB', status: 'Submitted' },
+            { id: 'DOC004', type: 'Customer Communication', filename: 'customer_emails_CASE124.pdf', uploadDate: '2026-06-23', size: '356 KB', status: 'Submitted' },
+            { id: 'DOC005', type: 'Shipping Evidence', filename: 'shipping_label_CASE125_20260604.pdf', uploadDate: '2026-06-23', size: '89 KB', status: 'Pending Review' }
+        ];
+
+        let evidenceDocuments = JSON.parse(localStorage.getItem('evidenceDocuments')) || sampleEvidenceDocuments;
+
+        function getFileIcon(type) {
+            const icons = {
+                'Transaction Record': '📊',
+                'Delivery Proof': '📦',
+                'Authorization Log': '🔐',
+                'Customer Communication': '💬',
+                'Merchant Policy': '📋',
+                'Payment Receipt': '💳',
+                'Shipping Evidence': '🚚',
+                'Refund Record': '💰',
+                'Fraud Investigation Report': '🔍',
+                'Other Documentation': '📄'
+            };
+            return icons[type] || '📄';
+        }
+
+        function renderEvidenceDocuments() {
+            const container = document.getElementById('evidenceDocuments');
+            if (!evidenceDocuments.length) {
+                container.innerHTML = '<p style="color:#6b7280;">No evidence documents uploaded yet. Use the form below to add documents.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            evidenceDocuments.forEach(doc => {
+                const statusColor = doc.status === 'Submitted' ? '#10b981' : '#f59e0b';
+                const card = document.createElement('div');
+                card.className = 'evidence-card';
+                card.innerHTML = `
+                    <div class="file-icon">${getFileIcon(doc.type)}</div>
+                    <strong>${doc.filename}</strong>
+                    <p><strong>Type:</strong> ${doc.type}</p>
+                    <p><strong>Size:</strong> ${doc.size}</p>
+                    <p><strong>Uploaded:</strong> ${doc.uploadDate}</p>
+                    <p><strong>Status:</strong> <span style="color:${statusColor}; font-weight:700;">${doc.status}</span></p>
+                    <button class="evidence-btn review" onclick="reviewDocument('${doc.id}')">Review</button>
+                    ${doc.status === 'Pending Review' ? `<button class="evidence-btn submit" onclick="submitDocumentToIssuer('${doc.id}')">Submit to Issuer</button>` : '<span style="color:#6b7280; font-size:0.9em;">✓ Submitted to issuer</span>'}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addEvidenceDocument() {
+            const type = document.getElementById('evidenceType').value;
+            const doc = {
+                id: 'DOC' + (evidenceDocuments.length + 1).toString().padStart(3, '0'),
+                type: type,
+                filename: type.replace(/\s+/g, '_').toLowerCase() + '_' + new Date().getTime().toString().slice(-6) + '.pdf',
+                uploadDate: new Date().toISOString().split('T')[0],
+                size: Math.floor(Math.random() * 400 + 100) + ' KB',
+                status: 'Pending Review'
+            };
+            evidenceDocuments.push(doc);
+            localStorage.setItem('evidenceDocuments', JSON.stringify(evidenceDocuments));
+            renderEvidenceDocuments();
+            setSimulationResult(`Document "${doc.filename}" uploaded successfully. Status: ${doc.status}`);
+        }
+
+        function reviewDocument(docId) {
+            const doc = evidenceDocuments.find(d => d.id === docId);
+            if (doc) {
+                alert(`Document Review:\n\nFilename: ${doc.filename}\nType: ${doc.type}\nSize: ${doc.size}\nUploaded: ${doc.uploadDate}\nStatus: ${doc.status}\n\nThis would open a PDF viewer in production.`);
+            }
+        }
+
+        function submitDocumentToIssuer(docId) {
+            const doc = evidenceDocuments.find(d => d.id === docId);
+            if (doc && doc.status === 'Pending Review') {
+                doc.status = 'Submitted';
+                localStorage.setItem('evidenceDocuments', JSON.stringify(evidenceDocuments));
+                renderEvidenceDocuments();
+                setSimulationResult(`Document "${doc.filename}" has been submitted to the issuer. The issuer will review within 2-5 business days.`);
+            }
+        }
+
+        function saveCases() {
+            localStorage.setItem('casesData', JSON.stringify(cases));
+        }
+
+        function setSimulationResult(message) {
+            document.getElementById('simulationResult').textContent = message;
+        }
+
+        function initialize() {
+            updateMerchantBanner();
+            renderSummaryCards();
+            renderRiskChart();
+            renderMerchantCases();
+            renderEvidenceDocuments();
+        }
+
+        initialize();
+    </script>
+</body>
+</html>

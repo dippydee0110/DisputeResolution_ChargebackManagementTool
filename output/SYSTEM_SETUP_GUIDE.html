@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Dispute Detection Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        
+        .setup-guide {
+            background: #f0f9ff;
+            border: 2px solid #0284c7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .setup-guide h2 {
+            color: #0284c7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .setup-step {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #0284c7;
+        }
+        
+        .setup-step strong {
+            color: #0284c7;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .alert-box {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        
+        .file-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .file-item {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #334155;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-icon {
+            margin-right: 8px;
+        }
+        
+        .data-signals {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .signal-badge {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+            text-align: center;
+        }
+        
+        .signal-badge.critical {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .signal-badge.high {
+            border-left-color: #f59e0b;
+            background: #fffbf0;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 10px 10px 0;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚨 Early Dispute Detection & Chargeback Analysis System</h1>
+            <p style="color: #666; margin-top: 5px;">Complete workflow for predicting chargebacks from chatbot sessions</p>
+        </header>
+        
+        <div class="alert-box">
+            <strong>✅ System Ready!</strong> All tools have been created. Follow the setup guide below to start using the system.
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>📊 Excel Chargeback Dataset</h3>
+                <p>Sample chargeback records with risk scoring. Replace with your actual data to track all disputes in one place.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🧠 AI Dispute Detection</h3>
+                <p>Analyzes chatbot sessions to identify early warning signs. Flags high-risk conversations before chargebacks are filed.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📈 Interactive Dashboard</h3>
+                <p>Visual reports with risk scores, detected signals, and actionable recommendations. Auto-refreshes as new cases are added.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Automated Workflow</h3>
+                <p>One-command analysis. Run once and get all reports generated automatically. Easy to schedule and integrate.</p>
+            </div>
+        </div>
+        
+        <div class="setup-guide">
+            <h2>🚀 Quick Start Guide</h2>
+            
+            <div class="setup-step">
+                <strong>Step 1: Generate Excel Dataset</strong>
+                <p>Run this command to generate sample chargeback records:</p>
+                <div class="code-block">python scripts/generate_chargeback_dataset.py</div>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Output: <code>output/chargeback_records.xlsx</code></p>
+            </div>
+            
+            <div class="setup-step">
+                <strong>Step 2: Add Customer Chat Sessions</strong>
+                <p>Place your chatbot transcripts in evidence folders:</p>
+                <div class="code-block">evidence/
+  CASE123/
+    chat_CASE123.txt
+  CASE124/
+    chat_CASE124.txt
+  ...</div>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">The system scans for <code>chat_*.txt</code> files automatically.</p>
+            </div>
+            
+            <div class="setup-step">
+                <strong>Step 3: Run Early Dispute Detection</strong>
+                <p>Analyze sessions and generate predictions:</p>
+                <div class="code-block">python scripts/early_dispute_detection.py</div>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Output: <code>output/early_dispute_detection.html</code></p>
+            </div>
+            
+            <div class="setup-step">
+                <strong>Step 4: Run Complete Analysis (All Steps)</strong>
+                <p>Or run everything at once:</p>
+                <div class="code-block">python scripts/run_analysis.py</div>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Generates all reports in one command.</p>
+            </div>
+            
+            <div class="setup-step">
+                <strong>Step 5: Review Reports</strong>
+                <p>Open these files in your browser and Excel:</p>
+                <ul style="margin: 10px 0; margin-left: 20px; color: #666;">
+                    <li>📊 <strong>chargeback_records.xlsx</strong> — Your chargeback data with risk scores</li>
+                    <li>🔍 <strong>early_dispute_detection.html</strong> — Risk analysis from chat sessions</li>
+                    <li>📋 <strong>dispute_detection_results.json</strong> — Machine-readable results</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="data-signals">
+            <h2>⚠️ Detected Signals (AI Looks For These)</h2>
+            <p>The system analyzes chat sessions and flags these early warning indicators:</p>
+            <div class="signal-grid">
+                <div class="signal-badge critical">
+                    🔴 Customer doesn't recognize transaction
+                </div>
+                <div class="signal-badge critical">
+                    🔴 Refund request (before chargeback)
+                </div>
+                <div class="signal-badge critical">
+                    🔴 Item not received
+                </div>
+                <div class="signal-badge high">
+                    🟠 Duplicate charge
+                </div>
+                <div class="signal-badge high">
+                    🟠 Quality complaint
+                </div>
+                <div class="signal-badge high">
+                    🟠 Merchant name mismatch
+                </div>
+                <div class="signal-badge high">
+                    🟠 Frustration escalation
+                </div>
+                <div class="signal-badge high">
+                    🟠 Urgent/emergency tone
+                </div>
+            </div>
+        </div>
+        
+        <div class="file-list">
+            <h3 style="margin-bottom: 15px;">📁 Generated Files</h3>
+            <div class="file-item">
+                <span class="file-icon">📊</span> <strong>output/chargeback_records.xlsx</strong> — Excel dataset (15 sample records)
+            </div>
+            <div class="file-item">
+                <span class="file-icon">🧠</span> <strong>scripts/early_dispute_detection.py</strong> — AI dispute detection engine
+            </div>
+            <div class="file-item">
+                <span class="file-icon">📈</span> <strong>scripts/generate_chargeback_dataset.py</strong> — Data generator
+            </div>
+            <div class="file-item">
+                <span class="file-icon">⚡</span> <strong>scripts/run_analysis.py</strong> — Master workflow runner
+            </div>
+            <div class="file-item">
+                <span class="file-icon">🔍</span> <strong>output/early_dispute_detection.html</strong> — Interactive report (after running)
+            </div>
+            <div class="file-item">
+                <span class="file-icon">💾</span> <strong>output/dispute_detection_results.json</strong> — Raw data (after running)
+            </div>
+        </div>
+        
+        <div style="background: white; padding: 25px; border-radius: 10px; margin: 30px 0;">
+            <h2 style="margin-bottom: 20px;">🎯 Using Your Own Data</h2>
+            <ol style="line-height: 2; color: #666;">
+                <li>Replace the sample data in <code>output/chargeback_records.xlsx</code> with your actual chargeback records</li>
+                <li>Add customer chat transcripts to <code>evidence/CASEID/chat_CASEID.txt</code> folders</li>
+                <li>Run: <code>python scripts/early_dispute_detection.py</code></li>
+                <li>Review the generated <code>output/early_dispute_detection.html</code> in your browser</li>
+                <li>Cases are scored by risk level - prioritize the 🔴 CRITICAL ones for immediate action</li>
+            </ol>
+        </div>
+        
+        <div style="background: #f0fdf4; border: 2px solid #22c55e; border-radius: 8px; padding: 20px; margin: 30px 0;">
+            <h2 style="color: #22c55e; margin-bottom: 10px;">✅ What This System Does</h2>
+            <ul style="color: #666; line-height: 2;">
+                <li>✓ <strong>Predicts chargebacks</strong> before they happen by analyzing chat sessions</li>
+                <li>✓ <strong>Prioritizes cases</strong> by risk level (🔴 Critical, 🟠 High, 🟡 Medium, 🟢 Low)</li>
+                <li>✓ <strong>Identifies specific signals</strong> that indicate dispute risk</li>
+                <li>✓ <strong>Provides recommendations</strong> for each case (contact customer, gather evidence, etc.)</li>
+                <li>✓ <strong>Tracks all chargebacks</strong> in Excel with centralized data</li>
+                <li>✓ <strong>Generates reports</strong> automatically - no manual work</li>
+            </ul>
+        </div>
+        
+        <div style="background: #fef3c7; border-left: 5px solid #f59e0b; padding: 20px; border-radius: 5px; margin: 30px 0;">
+            <strong>💡 Pro Tip:</strong> Schedule the analysis to run daily or weekly using:
+            <div class="code-block">python scripts/run_analysis.py</div>
+            Use Windows Task Scheduler or cron to automate this and get fresh reports regularly.
+        </div>
+        
+        <footer>
+            <p>🚀 Early dispute detection system ready to use!</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">For detailed workflows, see: workflows/ and resources/ folders</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Dispute Detection - CRITICAL Risk</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#fff1f2; color:#111827; padding:20px; }
+        .container { max-width:1000px; margin:0 auto; }
+        header { background:#ffffff; border-radius:14px; padding:28px; box-shadow:0 10px 26px rgba(0,0,0,0.08); margin-bottom:24px; border-left:8px solid #dc2626; }
+        h1 { color:#991b1b; font-size:2.1em; margin-bottom:8px; }
+        p.sub { color:#4b5563; margin-top:6px; }
+        .alert-panel { background:#fee2e2; border-left:6px solid #dc2626; padding:22px 24px; border-radius:12px; margin-bottom:24px; color:#991b1b; }
+        .alert-panel strong { color:#7f1d1d; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:18px; margin-bottom:30px; }
+        .stat-box { background:white; padding:24px; border-radius:14px; box-shadow:0 10px 20px rgba(0,0,0,0.06); }
+        .stat-value { font-size:2.3em; color:#991b1b; font-weight:700; margin-bottom:6px; }
+        .stat-label { color:#6b7280; font-size:0.88em; text-transform:uppercase; letter-spacing:0.07em; }
+        .case-card { background:white; border-radius:18px; box-shadow:0 12px 28px rgba(0,0,0,0.08); overflow:hidden; }
+        .case-header { padding:24px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .case-title { font-size:1.15em; font-weight:700; color:#111827; }
+        .risk-pill { background:#fee2e2; color:#991b1b; padding:10px 18px; border-radius:999px; font-weight:700; }
+        .case-body { padding:24px; }
+        .section { margin-bottom:24px; }
+        .section h2 { color:#991b1b; font-size:1.18em; margin-bottom:12px; }
+        .section p { color:#374151; line-height:1.8; }
+        .item-list { list-style:none; padding-left:0; margin-top:16px; }
+        .item-list li { background:#fff1f2; border:1px solid #fecaca; border-radius:14px; padding:18px; margin-bottom:14px; }
+        .item-title { font-weight:700; color:#991b1b; margin-bottom:8px; }
+        .item-text { color:#4b5563; line-height:1.75; }
+        .response-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-top:18px; }
+        .response-card { background:#ffffff; border:1px solid #f3f4f6; border-radius:16px; padding:18px; }
+        .response-card strong { display:block; margin-bottom:10px; color:#111827; }
+        .response-card p { color:#475569; line-height:1.75; }
+        .priority-banner { background:#fef2f2; border:1px solid #fecaca; border-radius:14px; padding:20px; margin-top:20px; color:#991b1b; }
+        .priority-banner strong { color:#7f1d1d; }
+        .footer { text-align:center; color:#6b7280; margin-top:36px; font-size:0.9em; }
+        @media(max-width:760px){ .case-header{flex-direction:column; align-items:flex-start;} }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CRITICAL RISK: Early Dispute Detection</h1>
+            <p class="sub">Use this view for immediate escalation, evidence demand, and high-value case response.</p>
+        </header>
+
+        <div class="alert-panel">
+            <strong>CRITICAL ALERT:</strong> This case needs immediate attention. Agent must escalate to senior support and request the strongest possible proof within 24 hours.
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value">91%</div>
+                <div class="stat-label">Risk Probability</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">$599.00</div>
+                <div class="stat-label">Disputed Amount</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Signals Detected</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">24 hrs</div>
+                <div class="stat-label">Escalation Deadline</div>
+            </div>
+        </div>
+
+        <div class="case-card">
+            <div class="case-header">
+                <div>
+                    <div class="case-title">CASE127 — TravelSmart Agency</div>
+                    <div style="color:#6b7280; margin-top:6px;">Dispute reason: Fraudulent Transaction</div>
+                </div>
+                <div class="risk-pill">Critical Risk</div>
+            </div>
+            <div class="case-body">
+                <div class="section">
+                    <h2>Recommended Evidence Requests</h2>
+                    <ul class="item-list">
+                        <li>
+                            <div class="item-title">Fraud monitoring report or dispute alert</div>
+                            <div class="item-text">Ask the customer to provide any fraud notifications sent by their bank or payment provider, including timestamps and reference numbers.</div>
+                        </li>
+                        <li>
+                            <div class="item-title">Full transaction receipt and authorization details</div>
+                            <div class="item-text">Collect authorization codes, merchant name, location, and any signature or two-factor authentication evidence.</div>
+                        </li>
+                        <li>
+                            <div class="item-title">Evidence of account compromise or non-authorization</div>
+                            <div class="item-text">Request a statement from the customer confirming they did not approve the charge and identify any suspicious account activity.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Agent Response Template</h2>
+                    <div class="response-grid">
+                        <div class="response-card">
+                            <strong>If customer confirms fraud but cannot provide all documents:</strong>
+                            <p>Escalate to fraud investigation. Use the customer’s statement plus available transaction details to support an expedited dispute and pressure the merchant to respond.</p>
+                        </div>
+                        <div class="response-card">
+                            <strong>If the amount is high and a payment platform is involved:</strong>
+                            <p>Notify the payment provider immediately and coordinate a joint review. Strongly recommend the customer retains all digital proof from the wallet or platform.</p>
+                        </div>
+                        <div class="response-card">
+                            <strong>If the case includes suspicious merchant practices:</strong>
+                            <p>Flag the case for compliance review and capture any anomalies in merchant description, pricing, or delivery promise.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Support Agent Checklist</h2>
+                    <ul class="item-list">
+                        <li><div class="item-title">Confirm cardholder identity and transaction date</div><div class="item-text">Re-check the exact date, time, and amount before moving the case forward.</div></li>
+                        <li><div class="item-title">Ask for platform/merchant documentation</div><div class="item-text">If the charge was processed via PayPal, Google Pay, or Klarna, collect the original wallet confirmation page.</div></li>
+                        <li><div class="item-title">Document all customer communication</div><div class="item-text">Record responses clearly in the case notes for downstream arbitration.</div></li>
+                    </ul>
+                </div>
+
+                <div class="priority-banner">
+                    <strong>Immediate action required:</strong> This case should be escalated to senior support and treated as a priority representment candidate.
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">Early Dispute Detection • Critical Risk Customer Support View</footer>
+    </div>
+</body>
+</html>

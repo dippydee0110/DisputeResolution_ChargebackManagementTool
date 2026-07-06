@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Resolution Center Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f5f5f5;
+            color: #222;
+            padding: 20px;
+        }
+        .container { max-width: 1440px; margin: 0 auto; }
+        header {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .subtitle { color: #717171; font-size: 15px; }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .kpi-label { color: #717171; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+        .kpi-value { color: #222; font-size: 24px; font-weight: 700; }
+        .kpi-note { margin-top: 8px; font-size: 12px; color: #717171; }
+        .layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .panel {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .panel h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .panel p { color: #717171; font-size: 14px; margin-bottom: 14px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: left;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        th { background: #f5f5f5; color: #222; font-weight: 600; }
+        .risk-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .risk-critical { background: #f2dede; color: #8b3a3a; }
+        .risk-high { background: #ffe8cc; color: #b07500; }
+        .risk-medium { background: #f5f5f5; color: #717171; }
+        .risk-low { background: #dcf0d8; color: #3d7f3f; }
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f5f5f5;
+            color: #717171;
+        }
+        .field { margin-bottom: 12px; }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #717171;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            font: inherit;
+            font-size: 13px;
+            background: white;
+            color: #222;
+        }
+        .field textarea { min-height: 100px; resize: vertical; }
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: #222; color: white; }
+        .btn-secondary { background: white; color: #222; border: 1px solid #e0e0e0; }
+        .btn-airbnb { background: #ff385c; color: white; }
+        .emulation-controls {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .emulation-note {
+            font-size: 12px;
+            color: #717171;
+        }
+        .rules-box {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 13px;
+            color: #222;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .alert {
+            margin-top: 12px;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 13px;
+            border: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            color: #222;
+        }
+        .recommendation-card {
+            margin-top: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+            padding: 12px;
+        }
+        .recommendation-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #717171;
+            margin-bottom: 8px;
+        }
+        .evidence-pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 0 6px 6px 0;
+            background: #eef2ff;
+            color: #1d4ed8;
+        }
+        .profile-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+        .profile-active { background: #dcf0d8; color: #3d7f3f; }
+        .profile-hold { background: #ffe8cc; color: #b07500; }
+        .profile-banned { background: #f2dede; color: #8b3a3a; }
+        .links a { color: #222; font-weight: 600; }
+        .section-subtitle {
+            margin: 12px 0 8px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #222;
+        }
+        .expand-btn {
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: #222;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .row-action-btn {
+            border: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            color: #222;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .expanded-row {
+            display: none;
+            background: #fafafa;
+        }
+        .expanded-row.active {
+            display: table-row;
+        }
+        .expanded-cell {
+            padding: 0;
+        }
+        .expanded-content {
+            padding: 12px;
+        }
+        .expanded-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .detail-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .detail-title {
+            font-size: 12px;
+            color: #717171;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .detail-line {
+            font-size: 13px;
+            color: #222;
+            margin-bottom: 6px;
+        }
+
+        /* Visual polish layer: admin-grade hierarchy and dense-table readability */
+        :root {
+            --surface: #ffffff;
+            --surface-alt: #f7f9fd;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --line: #d7deea;
+            --brand: #0f172a;
+            --accent: #1d4ed8;
+        }
+
+        body {
+            background:
+                radial-gradient(1100px 420px at 0% -15%, rgba(59, 130, 246, 0.10), transparent 60%),
+                radial-gradient(860px 320px at 100% -20%, rgba(15, 23, 42, 0.08), transparent 65%),
+                #f3f5f9;
+            color: var(--ink);
+        }
+
+        .container { max-width: 1500px; }
+
+        header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+            border-color: #d7e0ef;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+        }
+
+        .kpi-card,
+        .panel,
+        .detail-card,
+        .recommendation-card {
+            border-color: #d7deea;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .kpi-card,
+        .panel {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+        }
+
+        .table-wrap {
+            border: 1px solid #d7deea;
+            border-radius: 12px;
+            overflow: auto;
+            background: #ffffff;
+        }
+
+        th {
+            background: #eef3fb;
+            border-bottom-color: #d7deea;
+            font-size: 12px;
+            letter-spacing: 0.25px;
+            text-transform: uppercase;
+            color: #0f172a;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        td {
+            border-bottom-color: #e3e9f2;
+            color: #1f2937;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fbfcff;
+        }
+
+        .expanded-content {
+            padding: 18px;
+            background: linear-gradient(180deg, #f9fbff 0%, #f3f6fb 100%);
+            border-top: 1px solid #d7deea;
+        }
+
+        .detail-title {
+            color: #0f172a;
+            letter-spacing: 0.25px;
+        }
+
+        .btn {
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #111827 0%, #0b1220 100%);
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-airbnb {
+            background: linear-gradient(135deg, #ff385c 0%, #e31c5f 100%);
+        }
+
+        .phase-pill {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .phase-resolution { background: #e0ecff; color: #1d4ed8; }
+        .phase-chargeback { background: #ffe8cc; color: #b07500; }
+        .phase-closure { background: #dcf0d8; color: #3d7f3f; }
+
+        .lifecycle-state {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.25px;
+        }
+
+        .lifecycle-state-current { background: #dbeafe; color: #1e40af; }
+        .lifecycle-state-completed { background: #dcfce7; color: #166534; }
+        .lifecycle-state-upcoming { background: #eef2f7; color: #475569; }
+
+        .lifecycle-deadline { margin-top: 4px; font-size: 12px; color: #6b7280; }
+
+        .amount-credit,
+        .amount-debit {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+        }
+
+        .amount-credit { color: #3d7f3f; }
+        .amount-debit { color: #8b3a3a; }
+        @media (max-width: 860px) {
+            .expanded-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 980px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Airbnb Resolution Center Admin Dashboard</h1>
+            <div class="subtitle">Monitor host escalation risk, intervene early, and reduce movement from early resolution to formal bank disputes.</div>
+        </header>
+
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <div class="layout">
+            <div class="panel">
+                <h2>Highest-Risk Hosts (Merchants)</h2>
+                <p>Hosts with the largest probability of resolution escalation into chargebacks, weighted by amount, past disputes, and booking volume.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Host (Merchant)</th>
+                                <th>Risk</th>
+                                <th>Total Disputes</th>
+                                <th>Closed %</th>
+                                <th>Repeat Abuse Signals</th>
+                                <th>Early Resolution $</th>
+                                <th>Active Chargeback $</th>
+                                <th>Won $</th>
+                                <th>Lost $</th>
+                                <th>Airbnb Fee Paid $</th>
+                                <th>Enforcement</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="merchantRiskBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Admin Rule Engine</h2>
+                <p>Set natural-language intervention rules by host size, booking history, prior disputes, and risk profile.</p>
+                <div class="field">
+                    <label>Airbnb Resolution Rules</label>
+                    <textarea id="ruleText"></textarea>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="saveRules()">Save Rules</button>
+                    <button class="btn btn-secondary" onclick="resetRules()">Reset Default Rules</button>
+                    <button class="btn btn-airbnb" onclick="seedSimulation()">Load Simulation Cases</button>
+                </div>
+                <div class="alert" id="ruleAlert">Rules not saved yet.</div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="panel">
+                <h2>Merchant Dashboard Emulation (Customer-Raised Cases)</h2>
+                <p>Launch a host-specific merchant dashboard for each property host that has customer-raised cases, so current statuses are visible per host.</p>
+                <div class="emulation-controls">
+                    <button class="btn btn-secondary" onclick="openAllHostViews()">Open All Emulated Dashboards</button>
+                    <span class="emulation-note" id="emulationOpenStatus">Opens one tab per host with customer-raised cases.</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Host (Merchant)</th>
+                                <th>Customer-Raised Open Cases</th>
+                                <th>Customer-Raised In Dispute</th>
+                                <th>Payment Methods</th>
+                                <th>Most Recent Customer Case</th>
+                                <th>Current Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="merchantEmulationBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="panel">
+                <h2>Case Intervention Queue</h2>
+                <p>Review full case details in expandable rows. Resolution and active dispute pipelines are separated for faster triage.</p>
+                <div class="section-subtitle">Cases In Resolution (Not In Active Dispute)</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:42px;">+</th>
+                                <th>Case</th>
+                                <th>Guest (Customer)</th>
+                                <th>Host (Merchant)</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Escalation Risk</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resolutionQueueBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="section-subtitle" style="margin-top:14px;">Cases In Active Dispute</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:42px;">+</th>
+                                <th>Case</th>
+                                <th>Guest (Customer)</th>
+                                <th>Host (Merchant)</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Escalation Risk</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disputeQueueBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Intervene In Case</h2>
+                <div class="field">
+                    <label>Case</label>
+                    <select id="caseSelect"></select>
+                </div>
+                <div class="field">
+                    <label>Message Visibility</label>
+                    <select id="messageVisibility">
+                        <option value="Merchant">Private to Host</option>
+                        <option value="Customer">Private to Guest</option>
+                        <option value="Both">Shared to Both</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Intervention Type</label>
+                    <select id="interventionType">
+                        <option value="evidence">Evidence Prompt</option>
+                        <option value="policy">Policy Reminder</option>
+                        <option value="strategy">Resolution Strategy</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Admin Message</label>
+                    <textarea id="adminMessage" placeholder="Leave blank to auto-generate from rules."></textarea>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="sendIntervention()">Send Intervention</button>
+                    <button class="btn btn-secondary" onclick="suggestIntervention()">Suggest Message</button>
+                </div>
+                <div class="alert" id="interventionAlert">No intervention sent yet.</div>
+                <div class="alert links">
+                    Open dashboards:
+                    <a href="resolution_center_merchant.html" target="_blank" rel="noopener">Host Resolution Center</a> |
+                    <a href="resolution_center_customer.html" target="_blank" rel="noopener">Guest Resolution Center</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="panel">
+                <h2>Evidence Intelligence</h2>
+                <p>Previously submitted evidence is summarized here so the admin can rule fast and explain why a case should favor the guest or host.</p>
+                <div id="evidenceIntelligenceBody"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Profile Status</h2>
+                <p>Maintain behavior memory for hosts and guests across repeat cases.</p>
+                <div class="field">
+                    <label>Host Profile Status</label>
+                    <select id="hostProfileStatus">
+                        <option>Active</option>
+                        <option>On Hold</option>
+                        <option>Banned</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Guest Profile Status</label>
+                    <select id="guestProfileStatus">
+                        <option>Active</option>
+                        <option>On Hold</option>
+                        <option>Banned</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Behavior Memory Notes</label>
+                    <textarea id="behaviorMemoryNotes" placeholder="Persist host/customer behavior patterns that should influence future cases."></textarea>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="saveBehaviorMemory()">Save Memory</button>
+                </div>
+                <div class="alert" id="profileAlert">No profile status saved yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_RULES = [
+            'Collaborate with the Enforcements and Transaction Risk team to design and implement first-party misuse detection and enforcement programs that deter repeat dispute abuse while balancing recovery goals, guest experience, and marketplace integrity.',
+            'If the guest is currently on-trip, the host should be strongly encouraged to close the dispute urgently, prioritize immediate remediation, and avoid escalation while the stay is active.',
+            'Fiscal consequence rule: when a case escalates to dispute or chargeback, merchant may face payout delay, settlement offset/clawback, chargeback principal exposure, and additional Airbnb processing fees.',
+            'If either the merchant or customer is involved in 3 or more disputes, refer the account to Enforcement and Transaction Risk with a recommendation to ban Airbnb usage for at least 2 years pending review.',
+            'For hosts with > 20 bookings in last 90 days and dispute count > 3, require documentary evidence within 24 hours.',
+            'If disputed amount exceeds $400, send strategy recommendation to both sides and suggest partial settlement first.',
+            'For first-time guests, send policy reminder privately to host and clarify guest documentation checklist privately to guest.',
+            'When risk score is high or critical, remind both parties of Airbnb Resolution Center timelines and mutual closure benefits.',
+            'Before any case reaches Chargeback Filed, require one final mediation message with two settlement options.'
+        ].join('\n');
+
+        const mastercardStatuses = ['Initiated', 'In-Review', 'Representment Ready', 'Investigating', 'Reviewing Evidence', 'Escalated', 'Chargeback Filed', 'Won', 'Lost', 'Timeout', 'Closed'];
+        const terminalStatuses = ['Won', 'Lost', 'Timeout', 'Closed'];
+        const activeDisputeStatuses = [
+            'Chargeback Filed',
+            'Dispute Opened',
+            'Evidence Review',
+            'Counter Response',
+            'Final Review',
+            'Dispute Decided',
+            'Chargeback Submitted',
+            'Issuer Review Started',
+            'Airbnb Representment Submitted',
+            'Issuer Decision - Merchant Win',
+            'Issuer Decision - Customer Win'
+        ];
+
+        function toISO(d) {
+            return d.toISOString().split('T')[0];
+        }
+
+        function riskTier(score) {
+            if (score >= 0.8) return { label: 'Critical', cls: 'risk-critical' };
+            if (score >= 0.6) return { label: 'High', cls: 'risk-high' };
+            if (score >= 0.35) return { label: 'Medium', cls: 'risk-medium' };
+            return { label: 'Low', cls: 'risk-low' };
+        }
+
+        function getCases() {
+            return JSON.parse(localStorage.getItem('casesData')) || [];
+        }
+
+        function getCaseNotes(caseId) {
+            return JSON.parse(localStorage.getItem(`notes-${caseId}`)) || [];
+        }
+
+        function getCaseStatusHistory(caseId) {
+            return JSON.parse(localStorage.getItem(`status-${caseId}`)) || [];
+        }
+
+        function getCaseEvidence(caseId) {
+            return [
+                ...(JSON.parse(localStorage.getItem(`attached-${caseId}`)) || []),
+                ...(JSON.parse(localStorage.getItem(`evidence-${caseId}`)) || []),
+                ...(JSON.parse(localStorage.getItem(`merchantEvidence-${caseId}`)) || [])
+            ].filter((doc, index, arr) => arr.findIndex(item => (item.id || item.filename || item.name) === (doc.id || doc.filename || doc.name)) === index);
+        }
+
+        function getProfileKey(role, name) {
+            return `airbnbProfile-${role}-${String(name || '').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
+        }
+
+        function getProfile(role, name) {
+            return JSON.parse(localStorage.getItem(getProfileKey(role, name))) || { status: 'Active', notes: '', history: [] };
+        }
+
+        function saveProfile(role, name, patch) {
+            const key = getProfileKey(role, name);
+            const profile = Object.assign(getProfile(role, name), patch, { updatedAt: new Date().toISOString() });
+            profile.history = profile.history || [];
+            profile.history.push({ timestamp: new Date().toISOString(), status: profile.status, notes: profile.notes || '' });
+            localStorage.setItem(key, JSON.stringify(profile));
+            return profile;
+        }
+
+        function scoreEvidence(caseId) {
+            const evidence = getCaseEvidence(caseId);
+            const text = evidence.map(item => `${item.name || item.filename || ''} ${item.type || ''} ${item.status || ''}`).join(' ').toLowerCase();
+            const notes = getCaseNotes(caseId).map(note => String(note.text || '').toLowerCase()).join(' ');
+            const combined = `${text} ${notes}`;
+
+            let hostFault = 0;
+            let guestFault = 0;
+
+            ['unclean house', 'broken garage lock', 'door lock not working', 'broken appliance', 'dirty sheets', 'unwashed', 'no towels', 'windows broken'].forEach(term => {
+                if (combined.includes(term)) hostFault += 2;
+            });
+            ['no show', 'excessive damage by guest', 'rule violation', 'smoking', 'unauthorized party', 'false claim'].forEach(term => {
+                if (combined.includes(term)) guestFault += 2;
+            });
+
+            if (combined.includes('photo')) hostFault += 1;
+            if (combined.includes('receipt') || combined.includes('booking confirmation')) guestFault += 1;
+
+            return { evidence, hostFault, guestFault };
+        }
+
+        function getRecommendation(caseObj) {
+            const score = scoreEvidence(caseObj.caseId);
+            const amount = caseObj.disputedAmount || caseObj.amount || 0;
+            const urgency = caseObj.riskScore >= 0.8 ? 'Critical' : caseObj.riskScore >= 0.6 ? 'High' : caseObj.riskScore >= 0.35 ? 'Medium' : 'Low';
+            const hostProfile = getProfile('merchant', caseObj.merchant);
+            const guestProfile = getProfile('customer', caseObj.customer);
+            const merchantDisputes = getCases().filter(c => c.merchant === caseObj.merchant).length;
+            const customerDisputes = getCases().filter(c => c.customer === caseObj.customer).length;
+            const isOnTrip = String(caseObj.stayLabel || '').toLowerCase() === 'current';
+
+            let decision = 'AI review required';
+            let payout = 'No payout decision yet';
+            if (score.hostFault > score.guestFault + 1) {
+                decision = 'Rule in favor of the guest';
+                payout = `Merchant payout: $0.00; customer refund: $${amount.toFixed(2)}`;
+            } else if (score.guestFault > score.hostFault + 1) {
+                decision = 'Rule in favor of the host';
+                payout = `Merchant payout: $${amount.toFixed(2)}; customer refund: $0.00`;
+            }
+
+            const enforcementRisk = merchantDisputes >= 3 || customerDisputes >= 3
+                ? 'Refer to Enforcement and Transaction Risk: repeat dispute threshold reached; recommend 2-year Airbnb ban review.'
+                : 'No repeat-dispute enforcement trigger yet';
+            const fiscalConsequence = 'Fiscal consequence if escalated: merchant may incur payout delay, offset/clawback risk, and additional dispute-processing fees.';
+            const extraRisk = [hostProfile.status, guestProfile.status].some(status => status === 'Banned' || status === 'On Hold')
+                ? 'Escalate immediately due to profile restrictions'
+                : (isOnTrip
+                    ? `Guest is on-trip: escalate immediate action to both merchant and customer to contain impact and prevent dispute growth. ${fiscalConsequence}`
+                    : `${enforcementRisk} ${fiscalConsequence}`);
+
+            return {
+                urgency,
+                decision,
+                payout,
+                extraRisk,
+                merchantDisputes,
+                customerDisputes,
+                isOnTrip,
+                evidenceCount: score.evidence.length,
+                evidenceSummary: score.evidence.slice(0, 4).map(item => item.name || item.filename || item.type || 'Evidence item')
+            };
+        }
+
+        function updateBehaviorMemory(caseObj, recommendation) {
+            const hostProfile = getProfile('merchant', caseObj.merchant);
+            const guestProfile = getProfile('customer', caseObj.customer);
+            const hostAtFault = recommendation.decision.includes('customer');
+            const guestAtFault = recommendation.decision.includes('host');
+
+            const nextHostStatus = hostAtFault ? (hostProfile.status === 'On Hold' ? 'Banned' : 'On Hold') : 'Active';
+            const nextGuestStatus = guestAtFault ? (guestProfile.status === 'On Hold' ? 'Banned' : 'On Hold') : 'Active';
+
+            saveProfile('merchant', caseObj.merchant, {
+                status: hostProfile.status === 'Banned' ? 'Banned' : nextHostStatus,
+                notes: recommendation.decision,
+                lastCaseId: caseObj.caseId
+            });
+            saveProfile('customer', caseObj.customer, {
+                status: guestProfile.status === 'Banned' ? 'Banned' : nextGuestStatus,
+                notes: recommendation.decision,
+                lastCaseId: caseObj.caseId
+            });
+        }
+
+        function setCases(cases) {
+            localStorage.setItem('casesData', JSON.stringify(cases));
+        }
+
+        function calcAirbnbFee(amount) {
+            return Math.round((amount * 0.03) * 100) / 100;
+        }
+
+        function ensureSampleCases() {
+            let cases = getCases();
+            let changed = false;
+            cases.forEach(c => {
+                if (c.channel === 'AirbnbResolutionCenter' || String(c.caseId || '').startsWith('ABNB-')) {
+                    if (c.initiatedBy === 'Guest') {
+                        c.initiatedBy = 'Customer';
+                        changed = true;
+                    } else if (c.initiatedBy === 'Host') {
+                        c.initiatedBy = 'Merchant';
+                        changed = true;
+                    }
+                }
+                if (!c.paymentMethod) {
+                    c.paymentMethod = 'Card';
+                    changed = true;
+                }
+                if (!c.stayLabel) {
+                    c.stayLabel = 'Previous';
+                    changed = true;
+                }
+            });
+            if (changed) setCases(cases);
+            const hasAirbnbSamples = cases.some(c => c.channel === 'AirbnbResolutionCenter' || String(c.caseId || '').startsWith('ABNB-'));
+
+            const today = new Date();
+            const sample = [
+                { caseId: 'ABNB-4101', initiatedBy: 'Customer', customer: 'Guest: Priya Nair', merchant: 'Host: Lakeview Loft', property: 'Lakeview Loft', amount: 612.00, disputedAmount: 612.00, riskScore: 0.88, status: 'Reviewing Evidence', resolutionStatus: 'In Progress', complaintDate: toISO(new Date(today.getTime() - 4 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 8 * 86400000)), bookingCount: 34, pastDisputes: 6, channel: 'AirbnbResolutionCenter', stayLabel: 'Current' },
+                { caseId: 'ABNB-4102', initiatedBy: 'Merchant', customer: 'Guest: Marcus Lee', merchant: 'Host: Downtown Brick Studio', property: 'Downtown Brick Studio', amount: 280.00, disputedAmount: 280.00, riskScore: 0.63, status: 'In-Review', resolutionStatus: 'In Progress', complaintDate: toISO(new Date(today.getTime() - 2 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 6 * 86400000)), bookingCount: 16, pastDisputes: 4, channel: 'AirbnbResolutionCenter' },
+                { caseId: 'ABNB-4103', initiatedBy: 'Customer', customer: 'Guest: Sofia Khan', merchant: 'Host: Green Garden Flat', property: 'Green Garden Flat', amount: 149.00, disputedAmount: 149.00, riskScore: 0.39, status: 'Initiated', resolutionStatus: 'Open', complaintDate: toISO(new Date(today.getTime() - 1 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 3 * 86400000)), bookingCount: 9, pastDisputes: 1, channel: 'AirbnbResolutionCenter', stayLabel: 'Current' },
+                { caseId: 'ABNB-4104', initiatedBy: 'Customer', customer: 'Guest: Ana Gomez', merchant: 'Host: Harbor Stay Suites', property: 'Harbor Stay Suites', amount: 920.00, disputedAmount: 920.00, riskScore: 0.91, status: 'Chargeback Filed', resolutionStatus: 'Chargeback', complaintDate: toISO(new Date(today.getTime() - 10 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 12 * 86400000)), bookingCount: 56, pastDisputes: 8, channel: 'AirbnbResolutionCenter' },
+                { caseId: 'ABNB-4105', initiatedBy: 'Merchant', customer: 'Guest: Daniel Park', merchant: 'Host: Lakeview Loft', property: 'Lakeview Loft', amount: 355.00, disputedAmount: 355.00, riskScore: 0.52, status: 'Won', resolutionStatus: 'Closed', complaintDate: toISO(new Date(today.getTime() - 21 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 25 * 86400000)), bookingCount: 34, pastDisputes: 6, channel: 'AirbnbResolutionCenter', stayLabel: 'Previous' },
+                { caseId: 'ABNB-4106', initiatedBy: 'Customer', customer: 'Guest: Omar Malik', merchant: 'Host: Harbor Stay Suites', property: 'Harbor Stay Suites', amount: 480.00, disputedAmount: 480.00, riskScore: 0.74, status: 'Lost', resolutionStatus: 'Closed', complaintDate: toISO(new Date(today.getTime() - 18 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 22 * 86400000)), bookingCount: 56, pastDisputes: 8, channel: 'AirbnbResolutionCenter', stayLabel: 'Previous' },
+                { caseId: 'ABNB-4107', initiatedBy: 'Merchant', customer: 'Guest: Chloe Bennett', merchant: 'Host: Downtown Brick Studio', property: 'Downtown Brick Studio', amount: 198.00, disputedAmount: 198.00, riskScore: 0.44, status: 'Won', resolutionStatus: 'Closed', complaintDate: toISO(new Date(today.getTime() - 28 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 31 * 86400000)), bookingCount: 16, pastDisputes: 4, channel: 'AirbnbResolutionCenter', stayLabel: 'Previous' },
+                { caseId: 'ABNB-4108', initiatedBy: 'Customer', customer: 'Guest: Maya Iyer', merchant: 'Host: Green Garden Flat', property: 'Green Garden Flat', amount: 225.00, disputedAmount: 225.00, riskScore: 0.47, status: 'Closed', resolutionStatus: 'Closed', complaintDate: toISO(new Date(today.getTime() - 24 * 86400000)), transactionDate: toISO(new Date(today.getTime() - 29 * 86400000)), bookingCount: 9, pastDisputes: 3, channel: 'AirbnbResolutionCenter', stayLabel: 'Previous' }
+            ];
+
+            sample.forEach(c => {
+                c.lastUpdated = toISO(new Date());
+                c.merchantFee = c.merchantFee || calcAirbnbFee(c.amount);
+                c.responseWindowDays = 60;
+                c.responseWindowStartDate = toISO(new Date());
+                const statusHistory = [{ status: c.status, timestamp: new Date().toISOString(), author: 'System', comment: 'Simulation case loaded' }];
+                localStorage.setItem(`status-${c.caseId}`, JSON.stringify(statusHistory));
+                if (!localStorage.getItem(`notes-${c.caseId}`)) {
+                    localStorage.setItem(`notes-${c.caseId}`, JSON.stringify([{
+                        id: 'NOTE-' + c.caseId,
+                        author: c.initiatedBy === 'Customer' ? 'Customer' : 'Merchant',
+                        text: 'Initial resolution request submitted. Awaiting response.',
+                        timestamp: toISO(new Date()) + ' 09:00 AM'
+                    }]));
+                }
+                if (!localStorage.getItem(`attached-${c.caseId}`) && c.caseId === 'ABNB-4101') {
+                    localStorage.setItem(`attached-${c.caseId}`, JSON.stringify([
+                        { id: `${c.caseId}-A1`, name: 'Unclean House Photo', type: 'Photo', uploadDate: toISO(new Date()), status: 'Submitted' },
+                        { id: `${c.caseId}-A2`, name: 'Broken Garage Lock Photo', type: 'Photo', uploadDate: toISO(new Date()), status: 'Submitted' },
+                        { id: `${c.caseId}-A3`, name: 'Dirty Towels Photo', type: 'Photo', uploadDate: toISO(new Date()), status: 'Submitted' }
+                    ]));
+                }
+                if (!localStorage.getItem(`merchantEvidence-${c.caseId}`) && c.caseId === 'ABNB-4102') {
+                    localStorage.setItem(`merchantEvidence-${c.caseId}`, JSON.stringify([
+                        { id: `${c.caseId}-M1`, name: 'Guest Rule Violation Screenshot', type: 'Screenshot', uploadDate: toISO(new Date()), status: 'Submitted' },
+                        { id: `${c.caseId}-M2`, name: 'No-Show Check-in Log', type: 'Log', uploadDate: toISO(new Date()), status: 'Submitted' }
+                    ]));
+                }
+                if (!localStorage.getItem(`attached-${c.caseId}`) && c.caseId === 'ABNB-4104') {
+                    localStorage.setItem(`attached-${c.caseId}`, JSON.stringify([
+                        { id: `${c.caseId}-A1`, name: 'Guest Complaint Photo Set', type: 'Photo', uploadDate: toISO(new Date()), status: 'Submitted' },
+                        { id: `${c.caseId}-A2`, name: 'Refund Request Conversation', type: 'Screenshot', uploadDate: toISO(new Date()), status: 'Submitted' }
+                    ]));
+                }
+            });
+
+            if (!hasAirbnbSamples) {
+                setCases(cases.concat(sample));
+            } else if (changed) {
+                setCases(cases);
+            }
+        }
+
+        function ensurePaymentMethodScenarios() {
+            const allCases = getCases();
+            const now = new Date();
+            const existing = new Set(allCases.map(c => String(c.caseId || '').toUpperCase()));
+            let changed = false;
+
+            allCases.forEach(c => {
+                if (c && !c.paymentMethod) {
+                    c.paymentMethod = 'Card';
+                    changed = true;
+                }
+            });
+
+            const klarnaId = 'CASE-KLARNA-2201';
+            if (!existing.has(klarnaId)) {
+                allCases.push({
+                    caseId: klarnaId,
+                    initiatedBy: 'Customer',
+                    customer: 'Guest: Lina Noor',
+                    merchant: 'Host: Lakeview Loft',
+                    property: 'Lakeview Loft',
+                    paymentMethod: 'Klarna',
+                    amount: 260.00,
+                    originalAmount: 260.00,
+                    disputedAmount: 260.00,
+                    riskScore: 0.58,
+                    status: 'Closed',
+                    resolutionStatus: 'Closed',
+                    statusDescription: 'Klarna auto-closure after duplicate claim check',
+                    complaintDate: toISO(new Date(now.getTime() - 5 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 8 * 86400000)),
+                    responseWindowDays: 60,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 4,
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(260.00)
+                });
+                localStorage.setItem(`status-${klarnaId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 5 * 86400000).toISOString(), author: 'Customer', comment: 'Customer initiated Klarna dispute.' },
+                    { status: 'Dispute Opened', timestamp: new Date(now.getTime() - 4 * 86400000).toISOString(), author: 'Airbnb Disputes Team', comment: 'Klarna dispute flow started.' },
+                    { status: 'Klarna Claim Created', timestamp: new Date(now.getTime() - 3 * 86400000).toISOString(), author: 'Klarna Disputes', comment: 'Buyer claim created in Klarna.' },
+                    { status: 'Merchant Record Validation', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Klarna Disputes', comment: 'Merchant records matched successfully.' },
+                    { status: 'Klarna Auto-Closure', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Klarna Disputes', comment: 'Auto-closure completed.' },
+                    { status: 'Closed', timestamp: now.toISOString(), author: 'System', comment: 'Closed automatically by payment method workflow.' }
+                ]));
+                localStorage.setItem(`notes-${klarnaId}`, JSON.stringify([
+                    { id: `NOTE-${klarnaId}-1`, author: 'Airbnb System', text: 'Klarna auto-closure completed due matching merchant records and duplicate claim signals.', timestamp: `${toISO(new Date())} 10:00 AM` }
+                ]));
+                changed = true;
+            }
+
+            const upiId = 'CASE-UPI-3301';
+            if (!existing.has(upiId)) {
+                allCases.push({
+                    caseId: upiId,
+                    initiatedBy: 'Customer',
+                    customer: 'Guest: Arjun Rao',
+                    merchant: 'TechStore Pro',
+                    property: 'Lakeview Apartment',
+                    paymentMethod: 'UPI',
+                    amount: 310.00,
+                    originalAmount: 310.00,
+                    disputedAmount: 310.00,
+                    riskScore: 0.76,
+                    status: 'In Progress',
+                    resolutionStatus: 'In Dispute',
+                    statusDescription: 'UPI dispute awaiting additional merchant record detail',
+                    complaintDate: toISO(new Date(now.getTime() - 3 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 6 * 86400000)),
+                    responseWindowDays: 30,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 2,
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(310.00)
+                });
+                localStorage.setItem(`status-${upiId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 3 * 86400000).toISOString(), author: 'Customer', comment: 'Customer initiated UPI dispute.' },
+                    { status: 'Dispute Opened', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Airbnb Disputes Team', comment: 'UPI dispute flow started.' },
+                    { status: 'UPI Complaint Registered', timestamp: new Date(now.getTime() - 2 * 86400000 + 6 * 3600000).toISOString(), author: 'UPI Issuer Bank', comment: 'UPI complaint registered with NPCI reference.' },
+                    { status: 'Merchant Record Request', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'UPI Issuer Bank', comment: 'Additional merchant UTR and ledger detail required.' }
+                ]));
+                localStorage.setItem(`notes-${upiId}`, JSON.stringify([
+                    { id: `NOTE-${upiId}-1`, author: 'Airbnb Admin', text: 'UPI flow requires additional merchant record detail (UTR + settlement ledger) before final closure.', timestamp: `${toISO(new Date())} 11:10 AM` }
+                ]));
+                changed = true;
+            }
+
+            const cardInProgressId = 'CASE-CARD-4401';
+            if (!existing.has(cardInProgressId)) {
+                allCases.push({
+                    caseId: cardInProgressId,
+                    initiatedBy: 'Customer',
+                    customer: 'Guest: Emily Stone',
+                    merchant: 'Host: Downtown Brick Studio',
+                    property: 'Downtown Brick Studio',
+                    paymentMethod: 'Card',
+                    amount: 420.00,
+                    originalAmount: 420.00,
+                    disputedAmount: 420.00,
+                    riskScore: 0.67,
+                    status: 'Reviewing Evidence',
+                    resolutionStatus: 'In Progress',
+                    statusDescription: 'Card dispute in evidence review stage',
+                    complaintDate: toISO(new Date(now.getTime() - 4 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 7 * 86400000)),
+                    responseWindowDays: 60,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 1,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(420.00)
+                });
+                localStorage.setItem(`status-${cardInProgressId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 4 * 86400000).toISOString(), author: 'Customer', comment: 'Customer initiated card payment dispute.' },
+                    { status: 'Dispute Opened', timestamp: new Date(now.getTime() - 3 * 86400000).toISOString(), author: 'Airbnb Disputes Team', comment: 'Card network dispute opened with issuer.' },
+                    { status: 'Evidence Review', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Issuing Bank', comment: 'Issuer requested additional check-in and receipt evidence.' },
+                    { status: 'Reviewing Evidence', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Airbnb Admin', comment: 'Airbnb reviewing host and guest submissions before representment.' }
+                ]));
+                localStorage.setItem(`notes-${cardInProgressId}`, JSON.stringify([
+                    { id: `NOTE-${cardInProgressId}-1`, author: 'Airbnb Admin', text: 'Card guideline: submit issuer-ready evidence bundle before representment deadline.', timestamp: `${toISO(new Date())} 09:10 AM` }
+                ]));
+                changed = true;
+            }
+
+            const cardClosedId = 'CASE-CARD-4402';
+            if (!existing.has(cardClosedId)) {
+                allCases.push({
+                    caseId: cardClosedId,
+                    initiatedBy: 'Merchant',
+                    customer: 'Guest: Jason Reed',
+                    merchant: 'Host: Harbor Stay Suites',
+                    property: 'Harbor Stay Suites',
+                    paymentMethod: 'Card',
+                    amount: 510.00,
+                    originalAmount: 510.00,
+                    disputedAmount: 510.00,
+                    riskScore: 0.49,
+                    status: 'Won',
+                    resolutionStatus: 'Closed',
+                    statusDescription: 'Card chargeback resolved in merchant favor',
+                    complaintDate: toISO(new Date(now.getTime() - 16 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 20 * 86400000)),
+                    responseWindowDays: 60,
+                    responseWindowStartDate: toISO(new Date(now.getTime() - 16 * 86400000)),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 4,
+                    stayLabel: 'Previous',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(510.00)
+                });
+                localStorage.setItem(`status-${cardClosedId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 16 * 86400000).toISOString(), author: 'Merchant', comment: 'Merchant initiated card dispute response.' },
+                    { status: 'Representment Submitted', timestamp: new Date(now.getTime() - 14 * 86400000).toISOString(), author: 'Airbnb Disputes Team', comment: 'Representment package submitted to issuer.' },
+                    { status: 'Issuer Decision - Merchant Win', timestamp: new Date(now.getTime() - 12 * 86400000).toISOString(), author: 'Issuing Bank', comment: 'Issuer accepted representment.' },
+                    { status: 'Won', timestamp: new Date(now.getTime() - 11 * 86400000).toISOString(), author: 'System', comment: 'Case closed with merchant win.' }
+                ]));
+                localStorage.setItem(`notes-${cardClosedId}`, JSON.stringify([
+                    { id: `NOTE-${cardClosedId}-1`, author: 'Airbnb Admin', text: 'Card guideline applied: complete representment with invoice, timeline, and communication logs.', timestamp: `${toISO(new Date())} 09:35 AM` }
+                ]));
+                changed = true;
+            }
+
+            const paypalOpenId = 'CASE-PAYPAL-5501';
+            if (!existing.has(paypalOpenId)) {
+                allCases.push({
+                    caseId: paypalOpenId,
+                    initiatedBy: 'Customer',
+                    customer: 'Guest: Mia Clarke',
+                    merchant: 'Host: Green Garden Flat',
+                    property: 'Green Garden Flat',
+                    paymentMethod: 'PayPal',
+                    amount: 295.00,
+                    originalAmount: 295.00,
+                    disputedAmount: 295.00,
+                    riskScore: 0.62,
+                    status: 'In-Review',
+                    resolutionStatus: 'In Dispute',
+                    statusDescription: 'PayPal claim in review awaiting seller response',
+                    complaintDate: toISO(new Date(now.getTime() - 3 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 6 * 86400000)),
+                    responseWindowDays: 20,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 1,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(295.00)
+                });
+                localStorage.setItem(`status-${paypalOpenId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 3 * 86400000).toISOString(), author: 'Customer', comment: 'Customer opened PayPal dispute.' },
+                    { status: 'PayPal Claim Created', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'PayPal Resolution Center', comment: 'PayPal claim registered and buyer protected.' },
+                    { status: 'Seller Response Requested', timestamp: new Date(now.getTime() - 36 * 3600000).toISOString(), author: 'PayPal Resolution Center', comment: 'Seller response requested with supporting evidence.' },
+                    { status: 'In-Review', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Airbnb Admin', comment: 'PayPal case under review before final determination.' }
+                ]));
+                localStorage.setItem(`notes-${paypalOpenId}`, JSON.stringify([
+                    { id: `NOTE-${paypalOpenId}-1`, author: 'Airbnb Admin', text: 'PayPal guideline: respond within seller-response window and attach transaction proof and service delivery evidence.', timestamp: `${toISO(new Date())} 10:20 AM` }
+                ]));
+                changed = true;
+            }
+
+            const paypalClosedId = 'CASE-PAYPAL-5502';
+            if (!existing.has(paypalClosedId)) {
+                allCases.push({
+                    caseId: paypalClosedId,
+                    initiatedBy: 'Merchant',
+                    customer: 'Guest: Noah Patel',
+                    merchant: 'TechStore Pro',
+                    property: 'Lakeview Apartment',
+                    paymentMethod: 'PayPal',
+                    amount: 340.00,
+                    originalAmount: 340.00,
+                    disputedAmount: 340.00,
+                    riskScore: 0.41,
+                    status: 'Closed',
+                    resolutionStatus: 'Closed',
+                    statusDescription: 'PayPal dispute closed after buyer-seller agreement',
+                    complaintDate: toISO(new Date(now.getTime() - 13 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 17 * 86400000)),
+                    responseWindowDays: 20,
+                    responseWindowStartDate: toISO(new Date(now.getTime() - 13 * 86400000)),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 3,
+                    stayLabel: 'Previous',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(340.00)
+                });
+                localStorage.setItem(`status-${paypalClosedId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 13 * 86400000).toISOString(), author: 'Merchant', comment: 'Merchant initiated PayPal resolution workflow.' },
+                    { status: 'PayPal Review', timestamp: new Date(now.getTime() - 11 * 86400000).toISOString(), author: 'PayPal Resolution Center', comment: 'PayPal reviewed both parties evidence.' },
+                    { status: 'Settlement Accepted', timestamp: new Date(now.getTime() - 10 * 86400000).toISOString(), author: 'Customer', comment: 'Customer accepted negotiated PayPal settlement.' },
+                    { status: 'Closed', timestamp: new Date(now.getTime() - 9 * 86400000).toISOString(), author: 'System', comment: 'PayPal dispute closed after settlement.' }
+                ]));
+                localStorage.setItem(`notes-${paypalClosedId}`, JSON.stringify([
+                    { id: `NOTE-${paypalClosedId}-1`, author: 'Airbnb Admin', text: 'PayPal guideline followed: evidence complete, agreement reached before escalation to chargeback.', timestamp: `${toISO(new Date())} 10:45 AM` }
+                ]));
+                changed = true;
+            }
+
+            const klarnaOpenId = 'CASE-KLARNA-2202';
+            if (!existing.has(klarnaOpenId)) {
+                allCases.push({
+                    caseId: klarnaOpenId,
+                    initiatedBy: 'Customer',
+                    customer: 'Guest: Sara Lind',
+                    merchant: 'Host: Lakeview Loft',
+                    property: 'Lakeview Loft',
+                    paymentMethod: 'Klarna',
+                    amount: 185.00,
+                    originalAmount: 185.00,
+                    disputedAmount: 185.00,
+                    riskScore: 0.55,
+                    status: 'Investigating',
+                    resolutionStatus: 'In Dispute',
+                    statusDescription: 'Klarna claim under active investigation',
+                    complaintDate: toISO(new Date(now.getTime() - 2 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 5 * 86400000)),
+                    responseWindowDays: 45,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 2,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(185.00)
+                });
+                localStorage.setItem(`status-${klarnaOpenId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Customer', comment: 'Customer initiated Klarna dispute.' },
+                    { status: 'Klarna Claim Created', timestamp: new Date(now.getTime() - 36 * 3600000).toISOString(), author: 'Klarna Disputes', comment: 'Klarna claim created and payment metadata validated.' },
+                    { status: 'Investigating', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Klarna Disputes', comment: 'Klarna investigating merchant delivery and guest complaint evidence.' }
+                ]));
+                localStorage.setItem(`notes-${klarnaOpenId}`, JSON.stringify([
+                    { id: `NOTE-${klarnaOpenId}-1`, author: 'Airbnb Admin', text: 'Klarna guideline: keep order timeline and check-in verification aligned with claim metadata.', timestamp: `${toISO(new Date())} 11:25 AM` }
+                ]));
+                changed = true;
+            }
+
+            const cardMerchantOpenId = 'CASE-CARD-4403';
+            if (!existing.has(cardMerchantOpenId)) {
+                allCases.push({
+                    caseId: cardMerchantOpenId,
+                    initiatedBy: 'Merchant',
+                    customer: 'Guest: Olivia Turner',
+                    merchant: 'Host: Harbor Stay Suites',
+                    property: 'Harbor Stay Suites',
+                    paymentMethod: 'Card',
+                    amount: 275.00,
+                    originalAmount: 275.00,
+                    disputedAmount: 275.00,
+                    riskScore: 0.57,
+                    status: 'In-Review',
+                    resolutionStatus: 'In Dispute',
+                    statusDescription: 'Merchant initiated card dispute awaiting issuer review',
+                    complaintDate: toISO(new Date(now.getTime() - 2 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 5 * 86400000)),
+                    responseWindowDays: 60,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 1,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(275.00)
+                });
+                localStorage.setItem(`status-${cardMerchantOpenId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Merchant', comment: 'Merchant initiated card dispute due policy violation chargeback.' },
+                    { status: 'Representment Drafted', timestamp: new Date(now.getTime() - 36 * 3600000).toISOString(), author: 'Airbnb Disputes Team', comment: 'Representment package drafted and queued for issuer submission.' },
+                    { status: 'In-Review', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Issuing Bank', comment: 'Issuer review in progress for merchant initiated card dispute.' }
+                ]));
+                localStorage.setItem(`notes-${cardMerchantOpenId}`, JSON.stringify([
+                    { id: `NOTE-${cardMerchantOpenId}-1`, author: 'Airbnb Admin', text: 'Merchant initiated card dispute: include reason-code mapping and full representment checklist.', timestamp: `${toISO(new Date())} 12:05 PM` }
+                ]));
+                changed = true;
+            }
+
+            const paypalMerchantOpenId = 'CASE-PAYPAL-5503';
+            if (!existing.has(paypalMerchantOpenId)) {
+                allCases.push({
+                    caseId: paypalMerchantOpenId,
+                    initiatedBy: 'Merchant',
+                    customer: 'Guest: Ethan Morris',
+                    merchant: 'Host: Green Garden Flat',
+                    property: 'Green Garden Flat',
+                    paymentMethod: 'PayPal',
+                    amount: 230.00,
+                    originalAmount: 230.00,
+                    disputedAmount: 230.00,
+                    riskScore: 0.53,
+                    status: 'Initiated',
+                    resolutionStatus: 'Open',
+                    statusDescription: 'Merchant initiated PayPal dispute pending response bundle',
+                    complaintDate: toISO(new Date(now.getTime() - 1 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 4 * 86400000)),
+                    responseWindowDays: 20,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 0,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(230.00)
+                });
+                localStorage.setItem(`status-${paypalMerchantOpenId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Merchant', comment: 'Merchant initiated PayPal dispute after charge reversal notice.' },
+                    { status: 'Seller Evidence Requested', timestamp: new Date(now.getTime() - 18 * 3600000).toISOString(), author: 'PayPal Resolution Center', comment: 'PayPal requested complete seller evidence within response window.' }
+                ]));
+                localStorage.setItem(`notes-${paypalMerchantOpenId}`, JSON.stringify([
+                    { id: `NOTE-${paypalMerchantOpenId}-1`, author: 'Airbnb Admin', text: 'Merchant initiated PayPal flow: upload transaction proof template and response SLA package.', timestamp: `${toISO(new Date())} 12:20 PM` }
+                ]));
+                changed = true;
+            }
+
+            const klarnaMerchantOpenId = 'CASE-KLARNA-2203';
+            if (!existing.has(klarnaMerchantOpenId)) {
+                allCases.push({
+                    caseId: klarnaMerchantOpenId,
+                    initiatedBy: 'Merchant',
+                    customer: 'Guest: Nora Jensen',
+                    merchant: 'Host: Lakeview Loft',
+                    property: 'Lakeview Loft',
+                    paymentMethod: 'Klarna',
+                    amount: 205.00,
+                    originalAmount: 205.00,
+                    disputedAmount: 205.00,
+                    riskScore: 0.51,
+                    status: 'Investigating',
+                    resolutionStatus: 'In Dispute',
+                    statusDescription: 'Merchant initiated Klarna dispute under investigation',
+                    complaintDate: toISO(new Date(now.getTime() - 2 * 86400000)),
+                    transactionDate: toISO(new Date(now.getTime() - 6 * 86400000)),
+                    responseWindowDays: 45,
+                    responseWindowStartDate: toISO(new Date()),
+                    officialDisputeStarted: true,
+                    disputeStageIndex: 2,
+                    stayLabel: 'Current',
+                    lastUpdated: toISO(new Date()),
+                    merchantFee: calcAirbnbFee(205.00)
+                });
+                localStorage.setItem(`status-${klarnaMerchantOpenId}`, JSON.stringify([
+                    { status: 'Initiated', timestamp: new Date(now.getTime() - 2 * 86400000).toISOString(), author: 'Merchant', comment: 'Merchant initiated Klarna dispute citing duplicate refund attempt.' },
+                    { status: 'Klarna Review Started', timestamp: new Date(now.getTime() - 30 * 3600000).toISOString(), author: 'Klarna Disputes', comment: 'Klarna started claim validation and merchant metadata review.' },
+                    { status: 'Investigating', timestamp: new Date(now.getTime() - 1 * 86400000).toISOString(), author: 'Klarna Disputes', comment: 'Investigation active, awaiting final record reconciliation.' }
+                ]));
+                localStorage.setItem(`notes-${klarnaMerchantOpenId}`, JSON.stringify([
+                    { id: `NOTE-${klarnaMerchantOpenId}-1`, author: 'Airbnb Admin', text: 'Merchant initiated Klarna dispute: attach claim validation checklist and merchant statement template.', timestamp: `${toISO(new Date())} 12:35 PM` }
+                ]));
+                changed = true;
+            }
+
+            const caseEvidenceDocs = {
+                'CASE-KLARNA-2201': [
+                    { id: 'EV-2201-1', name: 'Klarna Auto-Closure Decision', type: 'Policy Note', filePath: 'sample_evidence/klarna_auto_closure_decision_case_2201.txt' },
+                    { id: 'EV-2201-2', name: 'Klarna Auto-Closure Policy', type: 'Policy', filePath: 'sample_evidence/klarna_auto_closure_policy_note.txt' }
+                ],
+                'CASE-KLARNA-2202': [
+                    { id: 'EV-2202-1', name: 'Klarna Claim Investigation Log', type: 'Investigation Log', filePath: 'sample_evidence/klarna_claim_investigation_log_case_2202.txt' },
+                    { id: 'EV-2202-2', name: 'Klarna Validation Checklist', type: 'Checklist', filePath: 'sample_evidence/klarna_claim_validation_checklist.txt' }
+                ],
+                'CASE-KLARNA-2203': [
+                    { id: 'EV-2203-1', name: 'Merchant Initiated Dispute Statement', type: 'Statement', filePath: 'sample_evidence/merchant_initiated_dispute_statement_template.txt' },
+                    { id: 'EV-2203-2', name: 'Klarna Validation Checklist', type: 'Checklist', filePath: 'sample_evidence/klarna_claim_validation_checklist.txt' }
+                ],
+                'CASE-CARD-4401': [
+                    { id: 'EV-4401-1', name: 'Card Issuer Evidence Request', type: 'Bank Notice', filePath: 'sample_evidence/card_issuer_evidence_request_case_4401.txt' },
+                    { id: 'EV-4401-2', name: 'Card Network Timeline Guide', type: 'Guideline', filePath: 'sample_evidence/card_network_chargeback_timeline_guide.txt' }
+                ],
+                'CASE-CARD-4402': [
+                    { id: 'EV-4402-1', name: 'Card Representment Packet', type: 'Representment', filePath: 'sample_evidence/card_network_representment_packet_case_4402.txt' },
+                    { id: 'EV-4402-2', name: 'Payout Reconciliation Worksheet', type: 'Worksheet', filePath: 'sample_evidence/payout_reconciliation_worksheet.txt' }
+                ],
+                'CASE-CARD-4403': [
+                    { id: 'EV-4403-1', name: 'Merchant Initiated Dispute Statement', type: 'Statement', filePath: 'sample_evidence/merchant_initiated_dispute_statement_template.txt' },
+                    { id: 'EV-4403-2', name: 'Card Representment Checklist', type: 'Checklist', filePath: 'sample_evidence/card_representment_packet_checklist.txt' }
+                ],
+                'CASE-PAYPAL-5501': [
+                    { id: 'EV-5501-1', name: 'PayPal Response Window Notice', type: 'PayPal Notice', filePath: 'sample_evidence/paypal_claim_response_window_case_5501.txt' },
+                    { id: 'EV-5501-2', name: 'PayPal Response SLA', type: 'SLA', filePath: 'sample_evidence/paypal_resolution_response_sla.txt' }
+                ],
+                'CASE-PAYPAL-5502': [
+                    { id: 'EV-5502-1', name: 'PayPal Settlement Agreement', type: 'Settlement', filePath: 'sample_evidence/paypal_settlement_agreement_case_5502.txt' },
+                    { id: 'EV-5502-2', name: 'Guest-Merchant Settlement Agreement Sample', type: 'Agreement', filePath: 'sample_evidence/guest_merchant_settlement_agreement_sample.txt' }
+                ],
+                'CASE-PAYPAL-5503': [
+                    { id: 'EV-5503-1', name: 'Merchant Initiated Dispute Statement', type: 'Statement', filePath: 'sample_evidence/merchant_initiated_dispute_statement_template.txt' },
+                    { id: 'EV-5503-2', name: 'PayPal Transaction Proof Template', type: 'Template', filePath: 'sample_evidence/paypal_transaction_proof_template.txt' }
+                ]
+            };
+
+            Object.keys(caseEvidenceDocs).forEach(caseId => {
+                const docs = caseEvidenceDocs[caseId].map((doc, idx) => ({
+                    ...doc,
+                    uploadDate: toISO(new Date()),
+                    sharedDate: toISO(new Date()),
+                    size: `${180 + idx * 35} KB`,
+                    status: 'Submitted'
+                }));
+                if (!localStorage.getItem(`evidence-${caseId}`)) {
+                    localStorage.setItem(`evidence-${caseId}`, JSON.stringify(docs));
+                }
+                if (!localStorage.getItem(`merchantEvidence-${caseId}`)) {
+                    localStorage.setItem(`merchantEvidence-${caseId}`, JSON.stringify(docs));
+                }
+                if (!localStorage.getItem(`attached-${caseId}`)) {
+                    localStorage.setItem(`attached-${caseId}`, JSON.stringify(docs));
+                }
+            });
+
+            if (changed) {
+                setCases(allCases);
+            }
+        }
+
+        function merchantStats(cases) {
+            const grouped = {};
+            cases.forEach(c => {
+                if (!grouped[c.merchant]) {
+                    grouped[c.merchant] = {
+                        merchant: c.merchant,
+                        riskWeighted: 0,
+                        cases: 0,
+                        closedCases: 0,
+                        repeatDisputeSignals: 0,
+                        customerRepeatSignals: 0,
+                        earlyResolutionAmount: 0,
+                        activeChargebackAmount: 0,
+                        wonAmount: 0,
+                        lostAmount: 0,
+                        airbnbFeePaidOut: 0
+                    };
+                }
+                const g = grouped[c.merchant];
+                const amount = c.disputedAmount || c.amount || 0;
+                g.cases += 1;
+                g.riskWeighted += (c.riskScore || 0) * Math.max(amount, 1);
+                if (['Won', 'Lost', 'Timeout', 'Closed'].includes(c.status)) g.closedCases += 1;
+                if (Number(c.pastDisputes || 0) >= 3) g.repeatDisputeSignals += 1;
+                const customerCaseCount = cases.filter(x => x.customer === c.customer).length;
+                if (customerCaseCount >= 3) g.customerRepeatSignals += 1;
+
+                if (['Initiated', 'In-Review', 'Representment Ready', 'Investigating', 'Reviewing Evidence', 'Escalated', 'In Progress', 'Open'].includes(c.status)) {
+                    g.earlyResolutionAmount += amount;
+                }
+                if (['Chargeback Filed'].includes(c.status)) {
+                    g.activeChargebackAmount += amount;
+                }
+                if (c.status === 'Won') {
+                    g.wonAmount += amount;
+                    g.airbnbFeePaidOut += calcAirbnbFee(amount);
+                }
+                if (['Lost', 'Timeout'].includes(c.status)) {
+                    g.lostAmount += amount;
+                    g.airbnbFeePaidOut += calcAirbnbFee(amount);
+                }
+            });
+
+            return Object.values(grouped)
+                .map(g => ({
+                    ...g,
+                    riskScore: g.riskWeighted / Math.max(1, g.earlyResolutionAmount + g.activeChargebackAmount + g.wonAmount + g.lostAmount),
+                    closeRate: g.cases ? g.closedCases / g.cases : 0,
+                    repeatAbuseMetric: g.repeatDisputeSignals + g.customerRepeatSignals,
+                    banWatch: g.repeatDisputeSignals >= 3 || g.customerRepeatSignals >= 3
+                }))
+                .sort((a, b) => b.riskScore - a.riskScore);
+        }
+
+        function renderKPIs(cases) {
+            const earlyResolution = cases
+                .filter(c => ['Initiated', 'In-Review', 'Representment Ready', 'Investigating', 'Reviewing Evidence', 'Escalated', 'In Progress', 'Open'].includes(c.status))
+                .reduce((s, c) => s + (c.disputedAmount || c.amount || 0), 0);
+            const activeChargeback = cases
+                .filter(c => c.status === 'Chargeback Filed')
+                .reduce((s, c) => s + (c.disputedAmount || c.amount || 0), 0);
+            const won = cases.filter(c => c.status === 'Won').reduce((s, c) => s + (c.disputedAmount || c.amount || 0), 0);
+            const lost = cases.filter(c => ['Lost', 'Timeout'].includes(c.status)).reduce((s, c) => s + (c.disputedAmount || c.amount || 0), 0);
+            const fees = cases
+                .filter(c => ['Won', 'Lost', 'Timeout'].includes(c.status))
+                .reduce((s, c) => s + calcAirbnbFee(c.disputedAmount || c.amount || 0), 0);
+            const highRiskHosts = new Set(cases.filter(c => (c.riskScore || 0) >= 0.6).map(c => c.merchant)).size;
+            const balances = cases.reduce((acc, c) => {
+                const rows = buildMoneyMovementRows(c);
+                const last = rows[rows.length - 1];
+                if (!last) return acc;
+                acc.merchant += Number(last.merchantBal || 0);
+                acc.airbnb += Number(last.airbnbBal || 0);
+                acc.guest += Number(last.guestBal || 0);
+                return acc;
+            }, { merchant: 0, airbnb: 0, guest: 0 });
+
+            document.getElementById('kpiGrid').innerHTML = `
+                <div class="kpi-card"><div class="kpi-label">Early Resolution $</div><div class="kpi-value">$${earlyResolution.toFixed(2)}</div><div class="kpi-note">Open and in-progress disputes</div></div>
+                <div class="kpi-card"><div class="kpi-label">Active Chargeback $</div><div class="kpi-value">$${activeChargeback.toFixed(2)}</div><div class="kpi-note">Now in official bank dispute</div></div>
+                <div class="kpi-card"><div class="kpi-label">Won $</div><div class="kpi-value">$${won.toFixed(2)}</div><div class="kpi-note">Cases resolved in host favor</div></div>
+                <div class="kpi-card"><div class="kpi-label">Lost $</div><div class="kpi-value">$${lost.toFixed(2)}</div><div class="kpi-note">Cases resolved in guest favor</div></div>
+                <div class="kpi-card"><div class="kpi-label">Airbnb Fee Paid Out $</div><div class="kpi-value">$${fees.toFixed(2)}</div><div class="kpi-note">Applied across resolved disputes</div></div>
+                <div class="kpi-card"><div class="kpi-label">High-Risk Hosts</div><div class="kpi-value">${highRiskHosts}</div><div class="kpi-note">Hosts with high or critical escalation risk</div></div>
+                <div class="kpi-card"><div class="kpi-label">Merchant Balance</div><div class="kpi-value">$${balances.merchant.toFixed(2)}</div><div class="kpi-note">Latest post-stage balance across cases</div></div>
+                <div class="kpi-card"><div class="kpi-label">Airbnb Balance</div><div class="kpi-value">$${balances.airbnb.toFixed(2)}</div><div class="kpi-note">Latest post-stage balance across cases</div></div>
+                <div class="kpi-card"><div class="kpi-label">Guest Balance</div><div class="kpi-value">$${balances.guest.toFixed(2)}</div><div class="kpi-note">Latest post-stage balance across cases</div></div>
+            `;
+        }
+
+        function renderMerchantRisk(cases) {
+            const rows = merchantStats(cases);
+            const body = document.getElementById('merchantRiskBody');
+            body.innerHTML = rows.map(r => {
+                const tier = riskTier(r.riskScore);
+                return `
+                    <tr>
+                        <td>${r.merchant}</td>
+                        <td><span class="risk-pill ${tier.cls}">${tier.label}</span></td>
+                        <td>${r.cases}</td>
+                        <td>${(r.closeRate * 100).toFixed(0)}%</td>
+                        <td>${r.repeatAbuseMetric}</td>
+                        <td>$${r.earlyResolutionAmount.toFixed(2)}</td>
+                        <td>$${r.activeChargebackAmount.toFixed(2)}</td>
+                        <td>$${r.wonAmount.toFixed(2)}</td>
+                        <td>$${r.lostAmount.toFixed(2)}</td>
+                        <td>$${r.airbnbFeePaidOut.toFixed(2)}</td>
+                        <td>${r.banWatch ? 'Ban Review' : 'Monitor'}</td>
+                        <td><button class="btn btn-secondary" onclick="openHostView('${encodeURIComponent(r.merchant)}')">Open Host View</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderMerchantEmulation(cases) {
+            const body = document.getElementById('merchantEmulationBody');
+            if (!body) return;
+
+            const customerRaised = cases.filter(c => c && c.initiatedBy === 'Customer' && c.merchant);
+            const merchants = Array.from(new Set(customerRaised.map(c => c.merchant))).sort((a, b) => String(a).localeCompare(String(b)));
+
+            if (!merchants.length) {
+                body.innerHTML = '<tr><td colspan="7" style="color:#717171; font-size:13px;">No customer-raised merchant cases found.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = merchants.map(name => {
+                const hostCases = customerRaised.filter(c => c.merchant === name);
+                const openCases = hostCases.filter(c => !['Won', 'Lost', 'Timeout', 'Closed'].includes(c.status));
+                const inDispute = openCases.filter(c => isActiveDisputeCase(c));
+                const methodMix = Array.from(new Set(openCases.map(c => getPaymentMethod(c)))).sort((a, b) => String(a).localeCompare(String(b)));
+                const latest = hostCases
+                    .slice()
+                    .sort((a, b) => String(b.lastUpdated || b.complaintDate || '').localeCompare(String(a.lastUpdated || a.complaintDate || '')))[0];
+
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${openCases.length}</td>
+                        <td>${inDispute.length}</td>
+                        <td>${methodMix.length ? methodMix.join(', ') : '-'}</td>
+                        <td>${latest ? latest.caseId : '-'}</td>
+                        <td>${latest ? `<span class="status-pill">${latest.status || 'Initiated'}</span>` : '-'}</td>
+                        <td><button class="btn btn-secondary" onclick="openHostView('${encodeURIComponent(name)}')">Open Emulated Dashboard</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function humanPriority(c) {
+            const score = c.riskScore || 0;
+            if (score >= 0.8 || (c.disputedAmount || c.amount || 0) > 700) return 'Urgent';
+            if (score >= 0.6) return 'High';
+            if (score >= 0.35) return 'Medium';
+            return 'Low';
+        }
+
+        function getDisplayAmount(c) {
+            const originalAmount = Number(c.originalAmount);
+            const base = Number.isFinite(originalAmount) && originalAmount > 0
+                ? originalAmount
+                : Number(c.amount || c.disputedAmount || 0);
+            return Number.isFinite(base) ? base : 0;
+        }
+
+        function getPaymentMethod(caseObj) {
+            return String(caseObj?.paymentMethod || 'Card');
+        }
+
+        function isTerminalCase(c) {
+            return terminalStatuses.includes(c.status);
+        }
+
+        function isActiveDisputeCase(c) {
+            if (c.officialDisputeStarted) return true;
+            if (activeDisputeStatuses.includes(c.status)) return true;
+            const lifecycle = String(c.resolutionStatus || '').toLowerCase();
+            return lifecycle.includes('dispute') || lifecycle.includes('chargeback');
+        }
+
+        function getNegotiationAmount(c) {
+            const n = Number(c.negotiatedAmount ?? c.settlementAmount);
+            return Number.isFinite(n) && n > 0 ? n : null;
+        }
+
+        function getEffectiveCaseAmount(c) {
+            const originalAmount = Number(c.originalAmount);
+            const negotiated = Number(c.negotiatedAmount ?? c.settlementAmount);
+            if (Number.isFinite(negotiated) && negotiated > 0) return negotiated;
+            if (Number.isFinite(originalAmount) && originalAmount > 0) return originalAmount;
+            return Number(c.disputedAmount || c.amount || 0);
+        }
+
+        const caseLifecycleStages = [
+            { key: 'resolution-open', label: 'Resolution Opened', phase: 'Resolution', policy: '60d request / 72h issue flag', customer: 'State issue and evidence clearly.', merchant: 'Acknowledge and request factual details only.', airbnb: 'Assess trust and escalation risk.' },
+            { key: 'evidence-gathering', label: 'Evidence Gathering', phase: 'Resolution', policy: 'Collect verifiable proofs before settlement.', customer: 'Upload receipts, photos, and timeline.', merchant: 'Upload invoices and property records.', airbnb: 'Highlight missing evidence.' },
+            { key: 'settlement-review', label: 'Settlement Review', phase: 'Resolution', policy: 'Mutual close only after both sides confirm terms.', customer: 'Review whether settlement is acceptable.', merchant: 'Confirm payout and closure terms.', airbnb: 'Show expected value and escalation risk.' },
+            { key: 'dispute-opened', label: 'Dispute Opened', phase: 'Chargeback', policy: 'Processor timeline now controls responses.', customer: 'Wait for Airbnb evidence follow-ups.', merchant: 'Prepare formal defense packet.', airbnb: 'Open official dispute workflow.' },
+            { key: 'representment-recommended', label: 'Representment Recommended', phase: 'Chargeback', policy: 'Represent only if evidence quality supports recovery.', customer: 'Monitor clarification requests.', merchant: 'Approve final evidence package.', airbnb: 'Evaluate EV and win likelihood.' },
+            { key: 'representment-submitted', label: 'Representment Submitted', phase: 'Chargeback', policy: 'Submission must meet network deadline and format.', customer: 'Await processor review.', merchant: 'Avoid changing record after submit.', airbnb: 'Track submission acknowledgment.' },
+            { key: 'pre-arbitration-eligible', label: 'Pre-Arbitration Eligible', phase: 'Chargeback', policy: 'Escalate only if incremental value is positive.', customer: 'Prepare for final outcome.', merchant: 'Supply any final compelling evidence.', airbnb: 'Reassess cost vs recovery.' },
+            { key: 'pre-arbitration-submitted', label: 'Pre-Arbitration Submitted', phase: 'Chargeback', policy: 'Submit complete network-ready file.', customer: 'Await final network decision.', merchant: 'Stand by for recovery outcome.', airbnb: 'Monitor for final decision.' },
+            { key: 'final-decision', label: 'Final Decision', phase: 'Chargeback', policy: 'Communicate outcome and next financial step.', customer: 'Review reimbursement status.', merchant: 'Review release or loss outcome.', airbnb: 'Trigger payout release or guest reimbursement.' },
+            { key: 'recovery-pending', label: 'Recovery Pending', phase: 'Chargeback', policy: 'Recover merchant funds after Airbnb reimburses guest.', customer: 'No further action unless payout missing.', merchant: 'Review clawback or reserve offset.', airbnb: 'Recover reserve/future payout amounts.' },
+            { key: 'closed', label: 'Closed', phase: 'Closure', policy: 'Close only after reconciliation and audit trail complete.', customer: 'Retain records.', merchant: 'Retain records and lessons learned.', airbnb: 'Finalize metrics and audit trace.' }
+        ];
+
+        function getLifecycleStageIndexByKey(stageKey) {
+            return Math.max(0, caseLifecycleStages.findIndex(stage => stage.key === stageKey));
+        }
+
+        function getLifecycleStageKey(caseObj) {
+            if (caseObj?.lifecycleStage) return caseObj.lifecycleStage;
+            const status = String(caseObj?.status || '').toLowerCase();
+            const resolution = String(caseObj?.resolutionStatus || '').toLowerCase();
+            if (status === 'closed' || resolution === 'closed') return 'closed';
+            if (caseObj?.officialDisputeStarted) {
+                const disputeMap = ['dispute-opened', 'representment-recommended', 'representment-submitted', 'pre-arbitration-eligible', 'final-decision'];
+                return disputeMap[Math.min(disputeMap.length - 1, Number(caseObj.disputeStageIndex || 0))];
+            }
+            if (status === 'accepted' || resolution === 'accepted' || Number(caseObj?.negotiatedAmount ?? caseObj?.settlementAmount) > 0) return 'settlement-review';
+            if (status === 'initiated') return 'resolution-open';
+            return 'evidence-gathering';
+        }
+
+        function getFinalOutcomeWinner(caseObj) {
+            return getRecommendation(caseObj).decision.includes('guest') ? 'Customer' : 'Merchant';
+        }
+
+        function getNextLifecycleStageKey(caseObj) {
+            const currentKey = getLifecycleStageKey(caseObj);
+            if (currentKey === 'closed') return 'closed';
+            if (currentKey === 'final-decision' && getFinalOutcomeWinner(caseObj) === 'Merchant') return 'closed';
+            const nextIndex = Math.min(caseLifecycleStages.length - 1, getLifecycleStageIndexByKey(currentKey) + 1);
+            return caseLifecycleStages[nextIndex].key;
+        }
+
+        function syncCaseLifecycle(caseObj, stageKey) {
+            caseObj.lifecycleStage = stageKey;
+            const winner = getFinalOutcomeWinner(caseObj);
+            const stage = caseLifecycleStages[getLifecycleStageIndexByKey(stageKey)];
+            if (stageKey === 'resolution-open') {
+                caseObj.status = 'Initiated';
+                caseObj.resolutionStatus = 'Open';
+                caseObj.officialDisputeStarted = false;
+            } else if (stageKey === 'evidence-gathering' || stageKey === 'settlement-review') {
+                caseObj.status = 'In Progress';
+                caseObj.resolutionStatus = 'In Progress';
+                caseObj.officialDisputeStarted = false;
+            } else if (stageKey === 'dispute-opened') {
+                caseObj.status = 'In Progress';
+                caseObj.resolutionStatus = 'In Dispute';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 0;
+            } else if (stageKey === 'representment-recommended') {
+                caseObj.status = 'In Progress';
+                caseObj.resolutionStatus = 'In Dispute';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 1;
+            } else if (stageKey === 'representment-submitted') {
+                caseObj.status = 'In Progress';
+                caseObj.resolutionStatus = 'In Dispute';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 2;
+            } else if (stageKey === 'pre-arbitration-eligible' || stageKey === 'pre-arbitration-submitted') {
+                caseObj.status = 'In Progress';
+                caseObj.resolutionStatus = 'In Dispute';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 3;
+            } else if (stageKey === 'final-decision') {
+                caseObj.status = winner === 'Merchant' ? 'Won' : 'Lost';
+                caseObj.resolutionStatus = 'In Dispute';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 4;
+            } else if (stageKey === 'recovery-pending') {
+                caseObj.status = 'Lost';
+                caseObj.resolutionStatus = 'Recovery Pending';
+                caseObj.officialDisputeStarted = true;
+                caseObj.disputeStageIndex = 4;
+            } else if (stageKey === 'closed') {
+                caseObj.status = 'Closed';
+                caseObj.resolutionStatus = 'Closed';
+            }
+            caseObj.statusDescription = `${stage.label} - ${stage.phase}`;
+            caseObj.lastUpdated = toISO(new Date());
+            return caseObj;
+        }
+
+        function buildLifecycleRows(caseObj) {
+            const currentKey = getLifecycleStageKey(caseObj);
+            const currentIndex = getLifecycleStageIndexByKey(currentKey);
+            const winner = getFinalOutcomeWinner(caseObj);
+            return caseLifecycleStages.map((stage, index) => {
+                let state = index < currentIndex ? 'Completed' : index === currentIndex ? 'Current' : 'Upcoming';
+                if (stage.key === 'recovery-pending' && winner === 'Merchant') state = currentIndex >= index ? 'Skipped' : 'Not Needed';
+                return { ...stage, state, moneyHint: stage.key === 'resolution-open' ? 'Guest funds held by Airbnb.' : stage.key === 'settlement-review' ? 'Negotiated transfer may occur.' : stage.key === 'final-decision' ? (winner === 'Merchant' ? 'Release funds to merchant.' : 'Airbnb reimburses guest.') : stage.key === 'recovery-pending' ? 'Recover funds from merchant.' : 'No new money movement expected.' };
+            });
+        }
+
+        function getLifecycleStateClass(state) {
+            const normalized = String(state || '').toLowerCase();
+            if (normalized.includes('current')) return 'lifecycle-state-current';
+            if (normalized.includes('completed')) return 'lifecycle-state-completed';
+            return 'lifecycle-state-upcoming';
+        }
+
+        function getLifecyclePhaseClass(phase) {
+            const normalized = String(phase || '').toLowerCase();
+            if (normalized.includes('chargeback')) return 'phase-chargeback';
+            if (normalized.includes('closure')) return 'phase-closure';
+            return 'phase-resolution';
+        }
+
+        function advanceLifecycleStageAdmin(caseId) {
+            const cases = getCases();
+            const idx = cases.findIndex(c => c.caseId === caseId);
+            if (idx === -1) return;
+            const nextKey = getNextLifecycleStageKey(cases[idx]);
+            syncCaseLifecycle(cases[idx], nextKey);
+
+            const statusHistory = getCaseStatusHistory(caseId);
+            statusHistory.push({
+                status: caseLifecycleStages[getLifecycleStageIndexByKey(nextKey)].label,
+                timestamp: new Date().toISOString(),
+                author: 'Airbnb Admin',
+                comment: `Admin simulated next stage: ${caseLifecycleStages[getLifecycleStageIndexByKey(nextKey)].label}`
+            });
+            localStorage.setItem(`status-${caseId}`, JSON.stringify(statusHistory));
+            setCases(cases);
+            renderAll();
+        }
+
+        function buildMoneyMovementRows(c) {
+            const amount = Math.max(0, getEffectiveCaseAmount(c));
+            const merchantStart = Number(c?.merchantStartingBalance ?? 1000);
+            const airbnbStart = Number(c?.airbnbStartingBalance ?? 0);
+            const guestStart = Number(c?.guestStartingBalance ?? 0);
+
+            let merchantBal = merchantStart;
+            let airbnbBal = airbnbStart;
+            let guestBal = guestStart;
+
+            const lifecycleRows = buildLifecycleRows(c);
+            const rows = [];
+            rows.push({
+                stage: 'Before Dispute - Booking Settlement Hold',
+                from: 'Guest',
+                to: 'Airbnb',
+                debit: amount,
+                credit: amount,
+                merchantBal,
+                airbnbBal: airbnbBal + amount,
+                guestBal: guestBal - amount,
+                note: 'Initial booking funds captured into Airbnb settlement flow.'
+            });
+            airbnbBal += amount;
+            guestBal -= amount;
+
+            lifecycleRows.forEach(stage => {
+                if (stage.state === 'Upcoming' || stage.state === 'Not Needed') return;
+                if (stage.key === 'final-decision' && getFinalOutcomeWinner(c) === 'Customer' && amount > 0) {
+                    airbnbBal -= amount;
+                    guestBal += amount;
+                    rows.push({ stage: stage.label, from: 'Airbnb', to: 'Guest', debit: amount, credit: amount, merchantBal, airbnbBal, guestBal, note: 'Airbnb reimburses guest after losing the dispute or chargeback.' });
+                    return;
+                }
+                if (stage.key === 'final-decision' && getFinalOutcomeWinner(c) === 'Merchant' && amount > 0) {
+                    airbnbBal -= amount;
+                    merchantBal += amount;
+                    rows.push({ stage: stage.label, from: 'Airbnb', to: 'Merchant', debit: amount, credit: amount, merchantBal, airbnbBal, guestBal, note: 'Airbnb releases or confirms merchant funds after a favorable decision.' });
+                    return;
+                }
+                if (stage.key === 'recovery-pending' && getFinalOutcomeWinner(c) === 'Customer' && amount > 0) {
+                    merchantBal -= amount;
+                    airbnbBal += amount;
+                    rows.push({ stage: stage.label, from: 'Merchant', to: 'Airbnb', debit: amount, credit: amount, merchantBal, airbnbBal, guestBal, note: 'Airbnb recovers reimbursed funds from merchant reserve or future payouts.' });
+                    return;
+                }
+                rows.push({ stage: stage.label, from: '-', to: '-', debit: 0, credit: 0, merchantBal, airbnbBal, guestBal, note: stage.moneyHint });
+            });
+
+            return rows;
+        }
+
+        function getMoneyFlowStageKey(stage) {
+            return String(stage || 'stage').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        }
+
+        function getMoneyFlowEvidenceMap(caseId) {
+            return JSON.parse(localStorage.getItem(`moneyFlowEvidence-${caseId}`)) || {};
+        }
+
+        function getAdminSampleDocOptions() {
+            return [
+                { label: 'Guest unclean house photos', path: 'sample_evidence/guest_unclean_house_photos.txt', type: 'Photo Set' },
+                { label: 'Host cleaning invoice', path: 'sample_evidence/host_cleaning_invoice_2026-06-29.txt', type: 'Invoice' },
+                { label: 'Garage lock repair estimate', path: 'sample_evidence/garage_lock_repair_estimate.txt', type: 'Estimate' },
+                { label: 'Guest checkout timeline', path: 'sample_evidence/guest_checkout_timeline.txt', type: 'Timeline' },
+                { label: 'Settlement matrix', path: 'sample_evidence/airbnb_recommended_settlement_matrix.txt', type: 'Message Screenshot' }
+            ];
+        }
+
+        function getAdminSampleDocContent(doc) {
+            if (!doc) return 'No sample content available.';
+            const base = `Document: ${doc.name || doc.label || 'Evidence'}\nType: ${doc.type || 'Document'}\nPath: ${doc.filePath || doc.path || 'N/A'}`;
+            const templates = {
+                'sample_evidence/guest_unclean_house_photos.txt': `${base}\n\n- Guest captured 5 photos at check-in showing unclean kitchen counters and linen stains.\n- Timestamp window: 2026-06-29 18:42 to 18:49 local time.\n- Photo set supports partial refund request for cleaning quality variance.`,
+                'sample_evidence/host_cleaning_invoice_2026-06-29.txt': `${base}\n\n- Vendor: SparkleTurnover Services\n- Invoice ID: INV-HT-2026-06-29-117\n- Line items: deep clean, linen replacement, bathroom sanitation\n- Amount paid by host: $128.00`,
+                'sample_evidence/garage_lock_repair_estimate.txt': `${base}\n\n- Service provider: SafeLock Austin\n- Estimate ID: EST-GL-8842\n- Issue: garage side lock cylinder misalignment\n- Proposed repair amount: $94.50\n- Earliest repair slot: next business day`,
+                'sample_evidence/guest_checkout_timeline.txt': `${base}\n\n- Check-in: 2026-06-29 17:15\n- Issue reported: 2026-06-29 18:51\n- Host acknowledged: 2026-06-29 19:07\n- Checkout: 2026-07-02 10:00\n- Guest requested compensation in-app before checkout.`,
+                'sample_evidence/airbnb_recommended_settlement_matrix.txt': `${base}\n\n- Scenario A (minor amenity failure): 20% refund suggestion.\n- Scenario B (functional safety issue): 35%-50% refund suggestion.\n- Scenario C (critical habitability issue): full refund + relocation support.\n- Current recommendation band: Scenario B pending merchant counter-evidence.`
+            };
+            return templates[doc.filePath || doc.path] || `${base}\n\n- Sample evidence content captured for review.\n- Use this as representative supporting documentation in dispute stages.`;
+        }
+
+        function hydrateMoneyFlowEvidenceAdmin(caseId, caseObj) {
+            const allEvidence = getCaseEvidence(caseId) || [];
+            if (!allEvidence.length) return;
+            const stage = getLifecycleStageConfig(caseObj);
+            const defaultStageKey = getMoneyFlowStageKey(stage ? stage.label : 'Before Dispute - Booking Settlement Hold');
+            const map = getMoneyFlowEvidenceMap(caseId);
+            allEvidence.forEach(doc => {
+                const stageKey = doc.stageKey || defaultStageKey;
+                const docs = map[stageKey] || [];
+                const id = doc.id || doc.filename || doc.name || `DOC-${Date.now()}`;
+                if (!docs.some(d => (d.id || d.filename || d.name) === id)) {
+                    docs.push({ ...doc, id, sampleContent: doc.sampleContent || getAdminSampleDocContent(doc) });
+                }
+                map[stageKey] = docs;
+            });
+            localStorage.setItem(`moneyFlowEvidence-${caseId}`, JSON.stringify(map));
+        }
+
+        function viewAdminEvidenceSample(caseId, stageKey, docId) {
+            const map = getMoneyFlowEvidenceMap(caseId);
+            const docs = map[stageKey] || [];
+            const doc = docs.find(d => (d.id || d.filename || d.name) === docId);
+            if (!doc) return;
+            alert(doc.sampleContent || getAdminSampleDocContent(doc));
+        }
+
+        function getMoneyFlowEvidenceLinksHtml(caseId, stageKey) {
+            const map = getMoneyFlowEvidenceMap(caseId);
+            const docs = map[stageKey] || [];
+            if (!docs.length) return '<div style="font-size:12px; color:#717171;">No evidence attached</div>';
+            return docs.map(doc => {
+                const docId = doc.id || doc.filename || doc.name;
+                return `<div style="font-size:12px; margin-bottom:6px;"><div><a href="${doc.filePath || doc.linkPath}" target="_blank" rel="noopener">${doc.name || doc.filename || 'Evidence'}</a></div><button class="btn btn-secondary" style="padding:4px 8px; font-size:11px; margin-top:4px;" onclick="viewAdminEvidenceSample('${caseId}', '${stageKey}', '${docId}')">View Sample Content</button></div>`;
+            }).join('');
+        }
+
+        function addMoneyMovementEvidenceAdmin(caseId, stageKey) {
+            const select = document.getElementById(`adminMoneyFlowSelect-${caseId}-${stageKey}`);
+            if (!select || !select.value) return;
+            const [path, type, label] = select.value.split('|');
+
+            const map = getMoneyFlowEvidenceMap(caseId);
+            const docs = map[stageKey] || [];
+            docs.push({
+                id: `MONEY-EV-${Date.now()}`,
+                name: label,
+                type,
+                uploadDate: toISO(new Date()),
+                status: 'Attached to stage',
+                filePath: path,
+                sampleContent: getAdminSampleDocContent({ name: label, type, filePath: path })
+            });
+            map[stageKey] = docs;
+            localStorage.setItem(`moneyFlowEvidence-${caseId}`, JSON.stringify(map));
+
+            select.value = '';
+            const evidenceBox = document.getElementById(`adminMoneyEv-${caseId}-${stageKey}`);
+            if (evidenceBox) {
+                evidenceBox.innerHTML = getMoneyFlowEvidenceLinksHtml(caseId, stageKey);
+            }
+        }
+
+        function setCaseForIntervention(caseId) {
+            const select = document.getElementById('caseSelect');
+            if (!select) return;
+            select.value = caseId;
+            select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function toggleAdminExpanded(rowId) {
+            const row = document.getElementById(rowId);
+            if (!row) return;
+            const isActive = row.classList.contains('active');
+            document.querySelectorAll('.expanded-row.active').forEach(el => el.classList.remove('active'));
+            if (!isActive) row.classList.add('active');
+        }
+
+        function renderCaseRows(list, tableType) {
+            if (!list.length) {
+                return `
+                    <tr>
+                        <td colspan="10" style="color:#717171; font-size:13px;">No cases in this queue.</td>
+                    </tr>
+                `;
+            }
+
+            return list.map(c => {
+                const tier = riskTier(c.riskScore || 0);
+                const recommendation = getRecommendation(c);
+                const recommendationText = recommendation.decision || 'No recommendation yet';
+                const evidenceCount = getCaseEvidence(c.caseId).length;
+                const statusHistory = getCaseStatusHistory(c.caseId);
+                const latestStatus = statusHistory[statusHistory.length - 1];
+                const latestNote = (getCaseNotes(c.caseId) || []).slice(-1)[0];
+                const hostProfile = getProfile('merchant', c.merchant || 'Host');
+                const guestProfile = getProfile('customer', c.customer || 'Guest');
+                const rowId = `admin-expand-${tableType}-${String(c.caseId).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                const negotiated = getNegotiationAmount(c);
+                const moneyRows = buildMoneyMovementRows(c);
+                const lifecycleRows = buildLifecycleRows(c);
+                const currentStage = caseLifecycleStages[getLifecycleStageIndexByKey(getLifecycleStageKey(c))];
+                hydrateMoneyFlowEvidenceAdmin(c.caseId, c);
+
+                return `
+                    <tr>
+                        <td><button class="expand-btn" onclick="toggleAdminExpanded('${rowId}')">+</button></td>
+                        <td>${c.caseId}</td>
+                        <td>${c.customer || 'Guest'}</td>
+                        <td>${c.merchant || 'Host'}</td>
+                        <td>$${getDisplayAmount(c).toFixed(2)}</td>
+                        <td>${getPaymentMethod(c)}</td>
+                        <td><span class="status-pill">${c.status || 'Initiated'}</span></td>
+                        <td><span class="risk-pill ${tier.cls}">${tier.label}</span></td>
+                        <td>${recommendation.urgency}</td>
+                        <td><button class="row-action-btn" onclick="setCaseForIntervention('${c.caseId}')">Intervene</button></td>
+                    </tr>
+                    <tr class="expanded-row" id="${rowId}">
+                        <td class="expanded-cell" colspan="10">
+                            <div class="expanded-content">
+                                <div class="detail-card">
+                                    <div class="detail-title">AI Resolution Summary</div>
+                                    <div class="table-wrap" style="margin-top:10px;">
+                                        <table>
+                                            <tbody>
+                                                <tr><td><strong>Urgency</strong></td><td>${recommendation.urgency}</td><td><strong>Recommendation</strong></td><td>${recommendationText}</td></tr>
+                                                <tr><td><strong>Funds at Risk</strong></td><td>${recommendation.payout}</td><td><strong>Current Stage</strong></td><td>${currentStage.label}</td></tr>
+                                                <tr><td><strong>Host Profile</strong></td><td>${hostProfile.status}</td><td><strong>Guest Profile</strong></td><td>${guestProfile.status}</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="detail-card" style="margin-top:12px;">
+                                    <details open>
+                                        <summary style="cursor:pointer; font-weight:700; color:#222;">Case Summary Table</summary>
+                                        <div class="table-wrap" style="margin-top:10px;">
+                                        <table>
+                                            <tbody>
+                                                <tr><td><strong>Case ID</strong></td><td>${c.caseId}</td><td><strong>Initiated By</strong></td><td>${c.initiatedBy || 'N/A'}</td></tr>
+                                                <tr><td><strong>Status</strong></td><td>${c.status || 'N/A'}</td><td><strong>Resolution Status</strong></td><td>${c.resolutionStatus || 'N/A'}</td></tr>
+                                                <tr><td><strong>Payment Method</strong></td><td>${getPaymentMethod(c)}</td><td><strong>Property</strong></td><td>${c.property || 'N/A'}</td></tr>
+                                                <tr><td><strong>Case Amount</strong></td><td>$${getDisplayAmount(c).toFixed(2)}</td><td><strong>Disputed Amount</strong></td><td>$${Number(c.disputedAmount || c.amount || 0).toFixed(2)}</td></tr>
+                                                <tr><td><strong>Negotiation Amount</strong></td><td>${negotiated ? `$${negotiated.toFixed(2)}` : '-'}</td><td><strong>Estimated Payout</strong></td><td>${c.estimatedPayout || '-'}</td></tr>
+                                                <tr><td><strong>Airbnb Fee</strong></td><td>$${Number(c.merchantFee || 0).toFixed(2)}</td><td><strong>Risk Score</strong></td><td>${Number(c.riskScore || 0).toFixed(2)}</td></tr>
+                                                <tr><td><strong>Evidence Items</strong></td><td>${evidenceCount}</td><td><strong>Priority</strong></td><td>${recommendation.urgency}</td></tr>
+                                                <tr><td><strong>Recommendation</strong></td><td>${recommendationText}</td><td><strong>Funds Guidance</strong></td><td>${recommendation.payout}</td></tr>
+                                                <tr><td><strong>Host Profile</strong></td><td>${hostProfile.status}</td><td><strong>Guest Profile</strong></td><td>${guestProfile.status}</td></tr>
+                                                <tr><td><strong>Latest Status Log</strong></td><td>${latestStatus ? `${latestStatus.author || 'System'} - ${latestStatus.comment || latestStatus.status}` : 'No history yet'}</td><td><strong>Latest Note</strong></td><td>${latestNote ? `${latestNote.author || 'System'} - ${latestNote.text || ''}` : 'No notes yet'}</td></tr>
+                                                <tr><td><strong>Transaction Date</strong></td><td>${c.transactionDate || 'N/A'}</td><td><strong>Complaint Date</strong></td><td>${c.complaintDate || 'N/A'}</td></tr>
+                                                <tr><td><strong>Last Updated</strong></td><td>${c.lastUpdated || 'N/A'}</td><td><strong>Queue Type</strong></td><td>${tableType === 'dispute' ? 'Active Dispute' : 'Resolution'}</td></tr>
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </details>
+                                </div>
+                                <div class="detail-card" style="margin-top:12px;">
+                                    <div class="detail-title">Money Movement by Stage (Guest ↔ Airbnb ↔ Merchant)</div>
+                                    <div class="table-wrap" style="margin-top:10px;">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Stage</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>Debit</th>
+                                                    <th>Credit</th>
+                                                    <th>Notes</th>
+                                                    <th>Stage Evidence</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${moneyRows.map(r => {
+                                                    const stageKey = getMoneyFlowStageKey(r.stage);
+                                                    return `<tr><td>${r.stage}</td><td>${r.from}</td><td>${r.to}</td><td>${r.debit > 0 ? `<span class="amount-debit">$${r.debit.toFixed(2)}</span>` : '-'}</td><td>${r.credit > 0 ? `<span class="amount-credit">$${r.credit.toFixed(2)}</span>` : '-'}</td><td>${r.note}</td><td><div style="display:grid; gap:6px;"><select id="adminMoneyFlowSelect-${c.caseId}-${stageKey}" style="padding:6px; border:1px solid #e0e0e0; border-radius:6px; font-size:12px;"><option value="">Attach evidence...</option>${getAdminSampleDocOptions().map(doc => `<option value="${doc.path}|${doc.type}|${doc.label}">${doc.label}</option>`).join('')}</select><button class="btn btn-secondary" style="padding:6px 8px; font-size:12px;" onclick="addMoneyMovementEvidenceAdmin('${c.caseId}', '${stageKey}')">Attach</button><div id="adminMoneyEv-${c.caseId}-${stageKey}">${getMoneyFlowEvidenceLinksHtml(c.caseId, stageKey)}</div></div></td></tr>`;
+                                                }).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="detail-card" style="margin-top:12px;">
+                                    <div class="detail-title">Case Lifecycle Engine (Reference)</div>
+                                    <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; margin-bottom:10px;">
+                                        <div style="font-size:13px; color:#222;"><strong>Current Stage:</strong> ${currentStage.label}</div>
+                                        <div style="font-size:13px; color:#222;"><strong>Next Simulation:</strong> ${(caseLifecycleStages[getLifecycleStageIndexByKey(getNextLifecycleStageKey(c))] || { label: 'Complete' }).label}</div>
+                                        <button class="btn btn-secondary" onclick="advanceLifecycleStageAdmin('${c.caseId}')">Simulate Next Stage</button>
+                                    </div>
+                                    <div class="table-wrap" style="margin-top:10px;">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Stage</th>
+                                                    <th>Phase</th>
+                                                    <th>State</th>
+                                                    <th>Policy / SLA</th>
+                                                    <th>Customer Recommendation</th>
+                                                    <th>Merchant Recommendation</th>
+                                                    <th>Airbnb Recommendation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${lifecycleRows.map(stage => `<tr><td>${stage.label}</td><td><span class="phase-pill ${getLifecyclePhaseClass(stage.phase)}">${stage.phase}</span></td><td><span class="lifecycle-state ${getLifecycleStateClass(stage.state)}">${stage.state}</span></td><td>${stage.policy}</td><td>${stage.customer}</td><td>${stage.merchant}</td><td>${stage.airbnb}</td></tr>`).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderCaseInterventionSection(cases) {
+            const queue = cases
+                .filter(c => !isTerminalCase(c))
+                .sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
+
+            const resolutionQueue = queue.filter(c => !isActiveDisputeCase(c));
+            const disputeQueue = queue.filter(c => isActiveDisputeCase(c));
+
+            const resolutionBody = document.getElementById('resolutionQueueBody');
+            const disputeBody = document.getElementById('disputeQueueBody');
+            const select = document.getElementById('caseSelect');
+
+            resolutionBody.innerHTML = renderCaseRows(resolutionQueue, 'resolution');
+            disputeBody.innerHTML = renderCaseRows(disputeQueue, 'dispute');
+
+            select.innerHTML = queue.length
+                ? queue.map(c => `<option value="${c.caseId}">${c.caseId} - ${c.merchant || 'Host'} vs ${c.customer || 'Guest'}</option>`).join('')
+                : '<option value="">No active cases</option>';
+        }
+
+        function getRules() {
+            return localStorage.getItem('airbnbAdminRules') || DEFAULT_RULES;
+        }
+
+        function saveRules() {
+            const val = document.getElementById('ruleText').value.trim();
+            localStorage.setItem('airbnbAdminRules', val || DEFAULT_RULES);
+            document.getElementById('ruleAlert').textContent = 'Rules saved and will be used for next recommendations.';
+        }
+
+        function resetRules() {
+            localStorage.setItem('airbnbAdminRules', DEFAULT_RULES);
+            document.getElementById('ruleText').value = DEFAULT_RULES;
+            document.getElementById('ruleAlert').textContent = 'Default Airbnb-style rules restored.';
+        }
+
+        function suggestIntervention() {
+            const cases = getCases();
+            const caseId = document.getElementById('caseSelect').value;
+            const visibility = document.getElementById('messageVisibility').value;
+            const type = document.getElementById('interventionType').value;
+            const c = cases.find(x => x.caseId === caseId);
+            if (!c) return;
+
+            const rules = getRules();
+            const amount = c.disputedAmount || c.amount || 0;
+            const tier = riskTier(c.riskScore || 0).label;
+            const recommendation = getRecommendation(c);
+
+            let suggestion = '';
+            if (type === 'evidence') {
+                suggestion = `Please upload missing evidence within 24 hours: booking confirmation, timestamped media, and conversation logs. Current case risk is ${tier}. ${recommendation.decision}.`;
+            } else if (type === 'policy') {
+                suggestion = `Reminder: Airbnb Resolution Center requires timely response, factual evidence, and good-faith negotiation before chargeback escalation. ${recommendation.extraRisk}.`;
+            } else {
+                suggestion = `${recommendation.decision}. ${recommendation.payout}. Recommended strategy: offer two settlement options ($${Math.max(20, amount * 0.3).toFixed(2)} and $${Math.max(40, amount * 0.5).toFixed(2)}), confirm terms in writing, and attempt mutual close before Chargeback Filed.`;
+            }
+
+            const scoped = visibility === 'Both' ? 'both parties' : (visibility === 'Merchant' ? 'host only' : 'guest only');
+            document.getElementById('adminMessage').value = `[Auto-Suggestion for ${scoped}] ${suggestion}\n\nRule context:\n${rules.split('\n').slice(0, 2).join('\n')}`;
+        }
+
+        function sendIntervention() {
+            const cases = getCases();
+            const caseId = document.getElementById('caseSelect').value;
+            const visibility = document.getElementById('messageVisibility').value;
+            const type = document.getElementById('interventionType').value;
+            const messageBox = document.getElementById('adminMessage');
+            let message = messageBox.value.trim();
+            const idx = cases.findIndex(x => x.caseId === caseId);
+            if (idx === -1) return;
+            const recommendation = getRecommendation(cases[idx]);
+
+            if (!message) {
+                suggestIntervention();
+                message = messageBox.value.trim();
+            }
+
+            const notesKey = `notes-${caseId}`;
+            const notes = JSON.parse(localStorage.getItem(notesKey)) || [];
+            notes.push({
+                id: 'NOTE-' + Date.now(),
+                author: 'Airbnb Admin',
+                text: message,
+                visibility,
+                interventionType: type,
+                timestamp: toISO(new Date()) + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+            });
+            localStorage.setItem(notesKey, JSON.stringify(notes));
+
+            const statusKey = `status-${caseId}`;
+            const statusHistory = JSON.parse(localStorage.getItem(statusKey)) || [];
+            statusHistory.push({
+                status: cases[idx].status,
+                author: 'Airbnb Admin',
+                timestamp: new Date().toISOString(),
+                comment: `Admin intervention sent (${type}) to ${visibility}.`
+            });
+            localStorage.setItem(statusKey, JSON.stringify(statusHistory));
+
+            if (cases[idx].status === 'Initiated') {
+                cases[idx].status = 'In-Review';
+                cases[idx].resolutionStatus = 'In Progress';
+            }
+            cases[idx].lastUpdated = toISO(new Date());
+            cases[idx].adminIntervened = true;
+            cases[idx].urgency = recommendation.urgency;
+            setCases(cases);
+
+            updateBehaviorMemory(cases[idx], recommendation);
+
+            document.getElementById('interventionAlert').textContent = `Intervention sent for ${caseId} (${visibility}). Open host/guest dashboards to view message routing.`;
+            renderAll();
+        }
+
+        function renderEvidenceIntelligence(cases) {
+            const body = document.getElementById('evidenceIntelligenceBody');
+            body.innerHTML = cases.map(c => {
+                const recommendation = getRecommendation(c);
+                const evidence = getCaseEvidence(c.caseId);
+                const hostProfile = getProfile('merchant', c.merchant);
+                const guestProfile = getProfile('customer', c.customer);
+                return `
+                    <div class="recommendation-card">
+                        <div class="recommendation-title">${c.caseId} • ${c.merchant}</div>
+                        <div><strong>Urgency:</strong> ${recommendation.urgency}</div>
+                        <div><strong>Decision:</strong> ${recommendation.decision}</div>
+                        <div><strong>Funds at risk:</strong> ${recommendation.payout}</div>
+                        <div><strong>Evidence seen:</strong> ${recommendation.evidenceCount} item(s)</div>
+                        <div style="margin-top:8px;"><strong>Evidence summary:</strong> ${recommendation.evidenceSummary.map(item => `<span class="evidence-pill">${item}</span>`).join('')}</div>
+                        <div style="margin-top:8px;"><strong>Profiles:</strong> <span class="profile-pill profile-${hostProfile.status === 'Banned' ? 'banned' : hostProfile.status === 'On Hold' ? 'hold' : 'active'}">Host ${hostProfile.status}</span><span class="profile-pill profile-${guestProfile.status === 'Banned' ? 'banned' : guestProfile.status === 'On Hold' ? 'hold' : 'active'}">Guest ${guestProfile.status}</span></div>
+                        <div style="margin-top:8px; color:#717171; font-size:12px;">${recommendation.extraRisk}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveBehaviorMemory() {
+            const hostStatus = document.getElementById('hostProfileStatus').value;
+            const guestStatus = document.getElementById('guestProfileStatus').value;
+            const notes = document.getElementById('behaviorMemoryNotes').value.trim();
+            const cases = getCases();
+            cases.forEach(c => {
+                saveProfile('merchant', c.merchant, { status: hostStatus, notes });
+                saveProfile('customer', c.customer, { status: guestStatus, notes });
+            });
+            document.getElementById('profileAlert').textContent = `Saved behavior memory for ${cases.length} Airbnb case(s).`;
+            renderAll();
+        }
+
+        function openHostView(encodedMerchant) {
+            const merchant = decodeURIComponent(encodedMerchant);
+            localStorage.setItem('selectedMerchant', merchant);
+            window.open(`resolution_center_merchant.html?merchant=${encodeURIComponent(merchant)}&tab=customer-initiated`, '_blank', 'noopener');
+        }
+
+        function openAllHostViews() {
+            const cases = getCases();
+            const hosts = Array.from(new Set(
+                cases
+                    .filter(c => c && c.initiatedBy === 'Customer' && c.merchant)
+                    .map(c => c.merchant)
+            )).sort((a, b) => String(a).localeCompare(String(b)));
+
+            const status = document.getElementById('emulationOpenStatus');
+            if (!hosts.length) {
+                if (status) status.textContent = 'No customer-raised hosts available to open.';
+                return;
+            }
+
+            hosts.forEach(name => {
+                localStorage.setItem('selectedMerchant', name);
+                window.open(`resolution_center_merchant.html?merchant=${encodeURIComponent(name)}&tab=customer-initiated`, '_blank', 'noopener');
+            });
+
+            if (status) status.textContent = `Opened ${hosts.length} emulated merchant dashboard tab(s).`;
+        }
+
+        function seedSimulation() {
+            ensureSampleCases();
+            document.getElementById('interventionAlert').textContent = 'Simulation cases loaded into shared storage and available across dashboards.';
+            renderAll();
+        }
+
+        function renderAll() {
+            const cases = getCases();
+            renderKPIs(cases);
+            renderMerchantRisk(cases);
+            renderMerchantEmulation(cases);
+            renderCaseInterventionSection(cases);
+            renderEvidenceIntelligence(cases);
+        }
+
+        function initialize() {
+            ensureSampleCases();
+            ensurePaymentMethodScenarios();
+            document.getElementById('ruleText').value = getRules();
+            renderAll();
+        }
+
+        initialize();
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+Document ID: DOC-CARD-TIMELINE-001
+Type: Card Network Timeline Guide
+Last Updated: 2026-07-06
+
+Purpose:
+- Define card dispute milestones and response windows for host and guest disputes.
+
+Guideline:
+- T0: Dispute opened by cardholder or merchant.
+- T0 + 3 days: Airbnb operations validates payment metadata and booking ledger.
+- T0 + 7 days: Evidence package freeze point for first representment draft.
+- T0 + 14 days: Issuer review checkpoint and additional request window.
+- T0 + 30 to 60 days: Final issuer decision based on network rules.
+
+Required Artifacts:
+- Booking confirmation and payout ledger.
+- Message timeline and issue escalation chronology.
+- Invoices, receipts, and property condition images.
+
+Risk Note:
+- Missing timeline alignment can result in automatic merchant loss.

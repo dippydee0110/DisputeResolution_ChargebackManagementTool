@@ -1,0 +1,15 @@
+Document ID: DOC-KLARNA-AUTO-006
+Type: Klarna Auto-Closure Policy Note
+
+Auto-Closure Eligibility:
+- Duplicate claim signals detected.
+- Merchant fulfillment records validated.
+- No unresolved customer safety or habitability issue.
+
+Control Points:
+- Airbnb admin must record closure reason in notes.
+- Both customer and merchant receive closure summary.
+- Case remains auditable for compliance review.
+
+Exception:
+- If new material evidence appears within review window, reopen as investigating.

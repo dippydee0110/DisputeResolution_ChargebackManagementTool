@@ -1,0 +1,16 @@
+Evidence ID: EV-GUEST-030
+Type: Timeline Statement
+Submitted By: Guest
+
+Timeline:
+- 17:28 check-in completed.
+- 17:35 first photo of kitchen condition captured.
+- 18:02 support chat opened with host.
+- 18:21 lock issue reported.
+
+Potential Gap:
+- Timeline is self-reported and not independently verified.
+- No entry-door camera clip attached.
+
+Suggested Next Step:
+- Host and guest agree on a neutral settlement amount while remaining evidence is verified.

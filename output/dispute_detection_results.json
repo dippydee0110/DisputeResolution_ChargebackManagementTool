@@ -1,0 +1,17 @@
+[
+  {
+    "case_id": "CASE123",
+    "risk_score": 0.125,
+    "signal_count": 1,
+    "signals_detected": [
+      {
+        "signal": "unrecognized_transaction",
+        "weight": 0.25,
+        "severity": "high",
+        "pattern_matched": "don't recognize"
+      }
+    ],
+    "risk_level": "[LOW] LOW",
+    "recommendation": "STANDARD: Routine handling, document interactions"
+  }
+]

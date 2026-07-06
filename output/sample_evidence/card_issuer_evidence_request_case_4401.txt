@@ -1,0 +1,17 @@
+Document: Card Issuer Evidence Request
+Case ID: CASE-CARD-4401
+Payment Method: Card
+Source: Issuing Bank
+Received On: 2026-07-03
+
+Request Details:
+- Provide proof of stay conditions at arrival.
+- Provide merchant communication and remediation timeline.
+- Provide receipts related to disputed deficiencies.
+
+SLA:
+- Response deadline: 7 calendar days from request receipt.
+- Late response may result in issuer ruling against merchant.
+
+Airbnb Internal Action:
+- Escalate host evidence checklist and compile representment draft.

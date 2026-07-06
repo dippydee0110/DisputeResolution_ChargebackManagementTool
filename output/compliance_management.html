@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Management Dashboard</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color:#0f172a; padding:24px; }
+        .container { max-width:1200px; margin:0 auto; }
+        header { background:white; padding:28px; border-radius:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:28px; border-left:8px solid #dc2626; }
+        h1 { font-size:2.3em; color:#7f1d1d; margin-bottom:8px; }
+        p.lead { color:#475569; line-height:1.8; margin-bottom:18px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-bottom:28px; }
+        .summary-card { background:white; border-radius:18px; padding:22px; box-shadow:0 10px 24px rgba(15,23,42,0.06); }
+        .summary-title { color:#475569; font-size:0.9em; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px; }
+        .summary-value { font-size:2.1em; font-weight:700; color:#111827; }
+        .summary-subtext { margin-top:10px; color:#64748b; font-size:0.95em; }
+        .section { background:white; border-radius:18px; padding:26px; box-shadow:0 10px 24px rgba(15,23,42,0.06); margin-bottom:28px; }
+        .section h2 { color:#991b1b; font-size:1.5em; margin-bottom:16px; }
+        .section p { color:#475569; line-height:1.7; margin-bottom:16px; }
+        .action-list { list-style:none; padding-left:0; display:grid; gap:14px; }
+        .action-item { background:#fef2f2; border:1px solid #fecaca; border-radius:14px; padding:18px; }
+        .action-item strong { color:#991b1b; }
+        .action-button { margin-top:16px; display:inline-block; padding:12px 20px; border:none; border-radius:12px; cursor:pointer; font-weight:700; color:white; background:#dc2626; transition:transform 0.2s; }
+        .action-button:hover { transform:translateY(-1px); }
+        .table { width:100%; border-collapse:collapse; margin-top:16px; font-size:0.88em; }
+        .table th, .table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+        .table th { background:#f8fafc; color:#0f172a; font-weight:700; font-size:0.9em; }
+        .badge { display:inline-block; padding:5px 12px; border-radius:999px; font-size:0.75em; font-weight:700; color:white; }
+        .badge-compliant { background:#10b981; }
+        .badge-warning { background:#f59e0b; }
+        .badge-violation { background:#dc2626; }
+        .badge-review { background:#2563eb; }
+        .button-group { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+        .cta-button { background:#dc2626; color:white; padding:12px 20px; border:none; border-radius:14px; cursor:pointer; font-weight:700; }
+        .cta-button.secondary { background:#7f1d1d; }
+        .cta-button.success { background:#10b981; }
+        .status-box { background:#f8fafc; border:1px solid #fecaca; border-radius:14px; padding:16px; margin-top:16px; font-size:0.9em; }
+        .status-box strong { color:#111827; }
+        .alert-banner { background:#fee2e2; border-left:6px solid #dc2626; border-radius:12px; padding:18px; color:#7f1d1d; margin-bottom:24px; }
+        .compliance-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+        .compliance-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px; }
+        .compliance-card strong { display:block; margin-bottom:8px; color:#111827; }
+        .compliance-card p { color:#475569; font-size:0.95em; margin-bottom:10px; }
+        .compliance-card .status-icon { font-size:2em; margin-bottom:8px; }
+        .compliance-btn { background:#dc2626; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9em; margin-right:8px; margin-top:8px; }
+        .compliance-btn:hover { background:#991b1b; }
+        .compliance-btn.review { background:#2563eb; }
+        .compliance-btn.review:hover { background:#1d4ed8; }
+        .compliance-btn.clear { background:#10b981; }
+        .compliance-btn.clear:hover { background:#059669; }
+        .expandable-row { cursor:pointer; background:#f8fafc; }
+        .review-status { display:none; background:#fef2f2; border-top:2px solid #dc2626; padding:16px; margin-top:0; }
+        .review-status.active { display:table-row; }
+        .review-timeline { display:flex; flex-direction:column; gap:12px; }
+        .review-step { display:flex; gap:12px; align-items:flex-start; padding:10px; background:white; border-left:4px solid #cbd5e1; border-radius:8px; font-size:0.85em; }
+        .review-step.active { border-left-color:#dc2626; background:#fef2f2; }
+        .review-step.completed { border-left-color:#10b981; background:#f0fdf4; }
+        .step-number { background:#cbd5e1; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-weight:700; font-size:0.9em; }
+        .review-step.active .step-number { background:#dc2626; }
+        .review-step.completed .step-number { background:#10b981; }
+        .step-content { flex:1; }
+        .step-content strong { display:block; margin-bottom:3px; color:#111827; font-size:0.95em; }
+        .step-content p { color:#475569; font-size:0.85em; margin:0; }
+        .debit { color:#dc2626; font-weight:700; }
+        .credit { color:#10b981; font-weight:700; }
+        @media (max-width: 860px) { .summary-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Compliance Management Dashboard</h1>
+            <p class="lead">Monitor merchant compliance status, risk factors, and resolution tracking. Identify non-compliant merchants and manage holds/restrictions.</p>
+        </header>
+
+        <div class="summary-grid" id="complianceSummary"></div>
+
+        <div class="section">
+            <h2>Compliance Review Cases</h2>
+            <p>Track compliance investigations, review findings, and manage merchant holds. Click case ID to expand review timeline and decision rationale.</p>
+            
+            <div class="button-group">
+                <button class="action-button" onclick="initiateComplianceReview()">📋 Start Compliance Review</button>
+                <button class="action-button" onclick="bulkUpdateStatus()">✓ Bulk Update Status</button>
+                <button class="cta-button success" onclick="clearCompliantMerchants()">Release Cleared Merchants</button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" onchange="toggleSelectAll(this)"></th>
+                        <th>Case ID</th>
+                        <th>Merchant</th>
+                        <th>Cases Count</th>
+                        <th>Critical %</th>
+                        <th>Unresolved</th>
+                        <th>Risk Score</th>
+                        <th>Current Status</th>
+                        <th>Review Days</th>
+                        <th>Reason</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody id="complianceCasesBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Compliance Decision Findings</h2>
+            <div class="compliance-grid" id="complianceFindings"></div>
+        </div>
+    </div>
+
+    <script>
+        const cases = JSON.parse(localStorage.getItem('casesData')) || [];
+        const merchants = {};
+        
+        // Build merchant aggregates
+        cases.forEach(c => {
+            if (!merchants[c.merchant]) {
+                merchants[c.merchant] = {
+                    merchant: c.merchant,
+                    caseIds: [],
+                    totalCases: 0,
+                    criticalCases: 0,
+                    unresolvedCases: 0,
+                    avgRisk: 0,
+                    statusHistory: []
+                };
+            }
+            merchants[c.merchant].caseIds.push(c.caseId);
+            merchants[c.merchant].totalCases++;
+            if (c.riskScore >= 0.7) merchants[c.merchant].criticalCases++;
+            if (!['Issuer Agrees (Merchant Win)', 'Issuer Rejects (Customer Win)', 'Chargeback Timeout - Merchant Inaction (Customer Paid)'].includes(c.status)) {
+                merchants[c.merchant].unresolvedCases++;
+            }
+        });
+
+        const complianceCases = JSON.parse(localStorage.getItem('complianceCases')) || Object.entries(merchants).map(([name, data]) => ({
+            complianceCaseId: `COMP-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+            merchant: name,
+            totalCases: data.totalCases,
+            criticalCases: data.criticalCases,
+            unresolvedCases: data.unresolvedCases,
+            riskScore: data.totalCases > 0 ? Math.min((data.criticalCases / data.totalCases + (data.unresolvedCases * 0.15)) / 1.15, 1) : 0.2,
+            status: 'Under Review',
+            initiatedDate: new Date().toISOString().split('T')[0],
+            reviewTimeline: [
+                { phase: 'Investigation Initiated', date: new Date().toISOString().split('T')[0], icon: '📋', desc: 'Compliance review started' }
+            ]
+        }));
+
+        function saveComplianceCases() {
+            localStorage.setItem('complianceCases', JSON.stringify(complianceCases));
+        }
+
+        function getRiskBadge(score) {
+            if (score >= 0.7) return '<span class="badge badge-violation">CRITICAL</span>';
+            if (score >= 0.5) return '<span class="badge badge-warning">HIGH RISK</span>';
+            if (score >= 0.3) return '<span class="badge badge-warning">MEDIUM RISK</span>';
+            return '<span class="badge badge-compliant">LOW RISK</span>';
+        }
+
+        function getStatusBadge(status) {
+            if (status.includes('Cleared')) return '<span class="badge badge-compliant">✓ CLEARED</span>';
+            if (status.includes('Violation')) return '<span class="badge badge-violation">✗ VIOLATION</span>';
+            if (status.includes('Hold')) return '<span class="badge badge-warning">⚠️ HOLD</span>';
+            return '<span class="badge badge-review">🔍 UNDER REVIEW</span>';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr === '-') return '-';
+            try {
+                const d = new Date(dateStr + 'T00:00:00');
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+            } catch { return dateStr; }
+        }
+
+        function renderSummaryCards() {
+            const total = complianceCases.length;
+            const cleared = complianceCases.filter(c => c.status.includes('Cleared')).length;
+            const violations = complianceCases.filter(c => c.status.includes('Violation')).length;
+            const holds = complianceCases.filter(c => c.status.includes('Hold')).length;
+
+            document.getElementById('complianceSummary').innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-title">Total Cases Under Review</div>
+                    <div class="summary-value">${total}</div>
+                    <div class="summary-subtext">Active compliance investigations</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Cleared (Compliant)</div>
+                    <div class="summary-value" style="color:#10b981;">${cleared}</div>
+                    <div class="summary-subtext">${cleared > 0 ? ((cleared/total)*100).toFixed(0) : 0}% of merchants</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">On Hold (Risk)</div>
+                    <div class="summary-value" style="color:#f59e0b;">${holds}</div>
+                    <div class="summary-subtext">Awaiting compliance action</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Violations Found</div>
+                    <div class="summary-value" style="color:#dc2626;">${violations}</div>
+                    <div class="summary-subtext">Exceeded compliance thresholds</div>
+                </div>
+            `;
+        }
+
+        function renderComplianceCases() {
+            const body = document.getElementById('complianceCasesBody');
+            body.innerHTML = '';
+            complianceCases.forEach((cc, idx) => {
+                const daysReview = Math.floor((new Date() - new Date(cc.initiatedDate)) / (1000 * 60 * 60 * 24));
+                const criticalPct = cc.totalCases > 0 ? ((cc.criticalCases / cc.totalCases) * 100).toFixed(0) : 0;
+                const decision = cc.decision || (cc.riskScore >= 0.7 ? 'VIOLATION' : cc.riskScore >= 0.5 ? 'HOLD' : 'CLEARED');
+
+                const row = document.createElement('tr');
+                row.className = 'expandable-row';
+                row.innerHTML = `
+                    <td><input type="checkbox" class="case-checkbox" data-case-id="${cc.complianceCaseId}" value="${idx}"></td>
+                    <td><span onclick="toggleReviewStatus('${cc.complianceCaseId}')" style="cursor:pointer; text-decoration:underline; color:#991b1b;">⬇ ${cc.complianceCaseId}</span></td>
+                    <td><strong>${cc.merchant}</strong></td>
+                    <td>${cc.totalCases}</td>
+                    <td>${criticalPct}%</td>
+                    <td>${cc.unresolvedCases}</td>
+                    <td>${getRiskBadge(cc.riskScore)}</td>
+                    <td>${getStatusBadge(cc.status)}</td>
+                    <td>${daysReview}d</td>
+                    <td><span style="font-size:0.85em; color:#6b7280;">${cc.riskScore >= 0.7 ? 'High chargeback rate' : cc.riskScore >= 0.5 ? 'Elevated risk pattern' : 'Compliant'}</span></td>
+                    <td><strong style="color:${decision === 'VIOLATION' ? '#dc2626' : decision === 'HOLD' ? '#f59e0b' : '#10b981'};">${decision}</strong></td>
+                `;
+                body.appendChild(row);
+
+                const reviewRow = document.createElement('tr');
+                reviewRow.className = 'review-status';
+                reviewRow.id = 'review-' + cc.complianceCaseId;
+                reviewRow.innerHTML = `
+                    <td colspan="11">
+                        <div class="review-timeline">
+                            ${getComplianceReviewTimeline(cc)}
+                        </div>
+                    </td>
+                `;
+                body.appendChild(reviewRow);
+            });
+        }
+
+        function getComplianceReviewTimeline(cc) {
+            const phases = [
+                { phase: 'Investigation Initiated', desc: 'Compliance review started; case history analyzed', icon: '📋' },
+                { phase: 'Evidence Collection', desc: 'Gathering chargeback details, merchant history, evidence', icon: '📂' },
+                { phase: 'Risk Assessment', desc: 'Evaluating merchant against compliance thresholds', icon: '📊' },
+                { phase: 'Findings Review', desc: 'Internal review of investigation findings', icon: '✓' },
+                { phase: 'Decision Issued', desc: `${cc.decision || (cc.riskScore >= 0.7 ? 'VIOLATION' : cc.riskScore >= 0.5 ? 'HOLD' : 'CLEARED')} - ${cc.riskScore >= 0.7 ? 'Merchant must remediate' : cc.riskScore >= 0.5 ? 'Merchant on probation' : 'Merchant compliant'}`, icon: cc.decision === 'VIOLATION' ? '✗' : cc.decision === 'HOLD' ? '⚠️' : '✓' }
+            ];
+
+            const phaseMap = { 'Investigation Initiated': 0, 'Evidence Collection': 1, 'Risk Assessment': 2, 'Findings Review': 3, 'Decision Issued': 4 };
+            const currentPhase = phaseMap[cc.status] || 1;
+
+            return phases.map((p, i) => {
+                const isCompleted = i < currentPhase;
+                const isCurrent = i === currentPhase - 1;
+                let bgColor = '#cbd5e1';
+                if (isCompleted) bgColor = '#10b981';
+                if (isCurrent) bgColor = '#dc2626';
+
+                return `
+                    <div class="review-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'active' : ''}">
+                        <div class="step-number" style="background:${bgColor};">${p.icon}</div>
+                        <div class="step-content">
+                            <strong>${p.phase}</strong>
+                            <p>${p.desc}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleReviewStatus(caseId) {
+            const row = document.getElementById('review-' + caseId);
+            if (row) {
+                row.classList.toggle('active');
+                const btn = event.target;
+                btn.textContent = row.classList.contains('active') ? '⬆ ' + caseId : '⬇ ' + caseId;
+            }
+        }
+
+        function renderComplianceFindings() {
+            const container = document.getElementById('complianceFindings');
+            container.innerHTML = '';
+            complianceCases.slice(0, 3).forEach(cc => {
+                const decision = cc.decision || (cc.riskScore >= 0.7 ? 'VIOLATION' : cc.riskScore >= 0.5 ? 'HOLD' : 'CLEARED');
+                const icon = decision === 'VIOLATION' ? '🚨' : decision === 'HOLD' ? '⏸️' : '✅';
+                const decisionColor = decision === 'VIOLATION' ? '#dc2626' : decision === 'HOLD' ? '#f59e0b' : '#10b981';
+                
+                const card = document.createElement('div');
+                card.className = 'compliance-card';
+                card.innerHTML = `
+                    <div class="status-icon">${icon}</div>
+                    <strong>${cc.merchant}</strong>
+                    <p><strong>Cases:</strong> ${cc.totalCases} total | ${cc.criticalCases} critical | ${cc.unresolvedCases} unresolved</p>
+                    <p><strong>Risk Score:</strong> <span style="color:${decisionColor};">${(cc.riskScore * 100).toFixed(0)}%</span></p>
+                    <p><strong>Decision:</strong> <span style="color:${decisionColor}; font-weight:700;">${decision}</span></p>
+                    <button class="compliance-btn ${decision === 'CLEARED' ? 'clear' : 'review'}" onclick="updateDecision('${cc.complianceCaseId}')">${decision === 'CLEARED' ? 'Release' : 'Review'}</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function getSelectedCaseIds() {
+            const checkboxes = document.querySelectorAll('.case-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.getAttribute('data-case-id'));
+        }
+
+        function toggleSelectAll(checkbox) {
+            const cbs = document.querySelectorAll('.case-checkbox');
+            cbs.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function initiateComplianceReview() {
+            alert('New compliance review case would be created. This would launch a workflow to begin investigating a merchant.');
+        }
+
+        function bulkUpdateStatus() {
+            const ids = getSelectedCaseIds();
+            if (!ids.length) { alert('Select at least one case'); return; }
+            alert(`Updating ${ids.length} cases. Status update confirmation would be sent.`);
+        }
+
+        function clearCompliantMerchants() {
+            const cleared = complianceCases.filter(c => c.decision === 'CLEARED' || c.riskScore < 0.3).length;
+            alert(`${cleared} compliant merchants released. Hold removal processed.`);
+        }
+
+        function updateDecision(caseId) {
+            const cc = complianceCases.find(c => c.complianceCaseId === caseId);
+            if (cc) {
+                cc.status = 'Decision Issued';
+                const newDecision = prompt('Enter decision (CLEARED/HOLD/VIOLATION):', cc.decision || 'CLEARED');
+                if (newDecision) {
+                    cc.decision = newDecision;
+                    saveComplianceCases();
+                    renderComplianceCases();
+                    renderComplianceFindings();
+                    alert(`Decision updated to ${newDecision}`);
+                }
+            }
+        }
+
+        function initialize() {
+            renderSummaryCards();
+            renderComplianceCases();
+            renderComplianceFindings();
+        }
+
+        initialize();
+    </script>
+</body>
+</html>

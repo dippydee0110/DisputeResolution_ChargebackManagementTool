@@ -1,0 +1,17 @@
+Document ID: DOC-KLARNA-VAL-005
+Type: Klarna Claim Validation Checklist
+
+Validation Steps:
+- Confirm Klarna claim reference and purchase session.
+- Verify merchant delivery and service timeline.
+- Compare buyer complaint text with platform case notes.
+- Validate amount split between principal and fees.
+
+Required Evidence:
+- Order confirmation and fulfillment proof.
+- Message timeline between guest and host.
+- Property or service condition evidence.
+
+Decision Support:
+- If merchant records fully match and no service gap exists, recommend closure.
+- If conflicting records exist, keep claim in investigating state.

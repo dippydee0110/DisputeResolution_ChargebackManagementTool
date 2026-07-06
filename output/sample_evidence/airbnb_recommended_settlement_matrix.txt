@@ -1,0 +1,17 @@
+Airbnb Internal Recommendation Matrix (Simulation)
+
+Scenario A: Strong cleanliness + access fault by host
+- Recommended outcome: favor guest
+- Suggested settlement: 40% to 70% of disputed amount
+
+Scenario B: Strong guest misuse / policy violation
+- Recommended outcome: favor host
+- Suggested settlement: 0% to 20% goodwill credit
+
+Scenario C: Mixed evidence, unresolved causality
+- Recommended outcome: shared responsibility
+- Suggested settlement: 30% to 50% midpoint
+- Keep resolution open and avoid official chargeback if possible
+
+Hold-Risk Reminder:
+- Repeated unresolved official disputes may trigger temporary account hold or permanent restrictions.

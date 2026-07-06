@@ -1,0 +1,23 @@
+Document: Card Network Representment Packet
+Case ID: CASE-CARD-4402
+Payment Method: Card
+Prepared By: Airbnb Disputes Team
+Prepared On: 2026-06-24
+
+Summary:
+- Representment submitted with merchant evidence package.
+- Core argument: service fulfilled and listing conditions aligned with booking terms.
+
+Evidence Bundle:
+1. Booking confirmation and terms acceptance screenshot.
+2. Check-in and checkout timeline logs.
+3. Host invoice and maintenance completion proof.
+4. Messaging thread showing issue acknowledgment and remediation offer.
+
+Timeline:
+- Dispute opened: 2026-06-20
+- Representment submitted: 2026-06-22
+- Issuer final decision: 2026-06-24
+
+Outcome Note:
+- Issuer accepted representment and reversed chargeback.

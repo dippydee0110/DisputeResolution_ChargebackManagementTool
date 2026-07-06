@@ -1,0 +1,13 @@
+Document ID: DOC-MERCHANT-INIT-007
+Type: Merchant Initiated Dispute Statement
+
+Statement Sections:
+- Merchant summary of dispute reason.
+- Requested outcome and amount.
+- Evidence references by document ID.
+- Timeline of communication attempts.
+- Confirmation that no duplicate payout request exists.
+
+Merchant Certification:
+- I confirm the submitted records are accurate and complete.
+- I understand repeated policy violations may lead to holds or bans.

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disputes UX Blueprint</title>
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --panel: #ffffff;
+      --text: #222;
+      --muted: #717171;
+      --line: #e0e0e0;
+      --brand: #ff385c;
+      --ok-bg: #dcf0d8;
+      --ok-text: #3d7f3f;
+      --warn-bg: #ffe8cc;
+      --warn-text: #b07500;
+      --bad-bg: #f2dede;
+      --bad-text: #8b3a3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 500px at 20% -20%, #ffe5ea 0%, transparent 60%), var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.4;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .sub { color: var(--muted); margin-bottom: 24px; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+    .kpi .value { margin-top: 6px; font-size: 26px; font-weight: 800; }
+    .kpi .note { margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+    .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .ok { background: var(--ok-bg); color: var(--ok-text); }
+    .warn { background: var(--warn-bg); color: var(--warn-text); }
+    .bad { background: var(--bad-bg); color: var(--bad-text); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: 10px;
+      vertical-align: top;
+    }
+    th {
+      background: #fafafa;
+      color: #555;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+    tr:nth-child(even) td { background: #fcfcfc; }
+    .footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      .container { padding: 20px; }
+      .kpis { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chargebacks and Disputes UX Blueprint</h1>
+    <div class="sub">Table-first, operator-friendly workflow for Customer, Merchant, and Airbnb Admin views.</div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Airbnb Win Probability</div>
+        <div class="value">61%</div>
+        <div class="note">Exposure at risk: $92,400</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Merchant Win Probability</div>
+        <div class="value">57%</div>
+        <div class="note">Recommended docs: invoice + timeline + chat logs</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Guest Win Probability</div>
+        <div class="value">43%</div>
+        <div class="note">Recommended docs: defect photos + receipts</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <h2 class="title">1) Case Summary Table (Expanded Row)</h2>
+        <div class="tag-row">
+          <span class="tag ok">Low cognitive load</span>
+          <span class="tag warn">Policy-sensitive</span>
+          <span class="tag bad">High impact if incorrect</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Case ID</th>
+              <th>Payment Method</th>
+              <th>Reason Code</th>
+              <th>Current Stage</th>
+              <th>Initial Amount</th>
+              <th>Negotiated Amount</th>
+              <th>Days Left</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CASE-UPI-3301</td>
+              <td>UPI</td>
+              <td>10.4 - Other Fraud</td>
+              <td>Merchant Record Request</td>
+              <td>$310.00</td>
+              <td>-</td>
+              <td>30</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2 class="title">2) Timeline Activity Table</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Status</th>
+              <th>Actor</th>
+              <th>Activity</th>
+              <th>Evidence Needed</th>
+              <th>Evidence Attached</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-07-02 10:05</td>
+              <td>Dispute Opened</td>
+              <td>Airbnb Disputes Team</td>
+              <td>Created dispute package and initiated network flow</td>
+              <td>Booking logs, chat transcript</td>
+              <td>2 documents</td>
+            </tr>
+            <tr>
+              <td>2026-07-03 14:32</td>
+              <td>Merchant Record Request</td>
+              <td>UPI Issuer Bank</td>
+              <td>Requested UTR and settlement ledger details</td>
+              <td>UTR proof, settlement ledger</td>
+              <td>0 documents</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2 class="title">3) Money Movement Ledger Table</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Merchant Balance</th>
+              <th>Airbnb Balance</th>
+              <th>Guest Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Final Decision (Lost)</td>
+              <td>Airbnb</td>
+              <td>Guest</td>
+              <td>$310.00</td>
+              <td>$310.00</td>
+              <td>$1,000.00</td>
+              <td>-$310.00</td>
+              <td>+$310.00</td>
+            </tr>
+            <tr>
+              <td>Recovery Pending</td>
+              <td>Merchant</td>
+              <td>Airbnb</td>
+              <td>$310.00</td>
+              <td>$310.00</td>
+              <td>$690.00</td>
+              <td>$0.00</td>
+              <td>+$310.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="footer">Use this blueprint to align visual storytelling with the Staff Platform Manager, Chargebacks and Disputes scope: lifecycle ownership, decisioning quality, policy compliance, and measurable loss reduction.</div>
+  </div>
+</body>
+</html>

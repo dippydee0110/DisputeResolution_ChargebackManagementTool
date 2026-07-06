@@ -1,0 +1,17 @@
+Document ID: DOC-SETTLEMENT-009
+Type: Guest-Merchant Settlement Agreement Sample
+
+Agreement Terms:
+- Parties agree on negotiated payout amount.
+- Payment direction and due date are explicitly listed.
+- Case closes after payment issue confirmation.
+
+Mandatory Fields:
+- Case ID
+- Agreed amount
+- Payer and payee
+- Payment method
+- Date and acknowledgement text
+
+Post-Settlement Rule:
+- No further dispute reopening unless material new evidence is submitted.

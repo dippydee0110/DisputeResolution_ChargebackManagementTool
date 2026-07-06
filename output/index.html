@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chargeback & Dispute Management Dashboard Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-header {
+            padding: 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .card-header.admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-header.critical {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+        
+        .card-header.high {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .card-header.medium {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        }
+        
+        .card-header.low {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .card-features li {
+            padding: 5px 0;
+            color: #555;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .card-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            text-decoration: none;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-critical {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-critical:hover {
+            background: #b91c1c;
+        }
+        
+        .btn-high {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-high:hover {
+            background: #d97706;
+        }
+        
+        .btn-medium {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-medium:hover {
+            background: #2563eb;
+        }
+        
+        .btn-low {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-low:hover {
+            background: #059669;
+        }
+        
+        .info-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .info-section p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .file-list {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .file-list p {
+            font-family: monospace;
+            color: #333;
+            margin: 5px 0;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chargeback & Dispute Management Suite</h1>
+            <p class="subtitle">Professional dashboards for administrative control and customer communication</p>
+        </header>
+        
+        <div class="dashboard-grid">
+            <!-- Airbnb Resolution Admin Dashboard -->
+            <div class="dashboard-card">
+                <div class="card-header admin">Airbnb Resolution Admin Dashboard</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Airbnb command center to monitor host escalation risk, intervene in early resolutions, and reduce movement into formal bank disputes.
+                    </p>
+                    <ul class="card-features">
+                        <li>Highest-risk host monitoring</li>
+                        <li>Cross-merchant financial rollups</li>
+                        <li>Admin intervention queue</li>
+                        <li>Natural-language rule engine</li>
+                        <li>Private/shared recommendation routing</li>
+                    </ul>
+                    <a href="airbnb_resolution_admin_dashboard.html" class="btn btn-primary">Launch Airbnb Admin Dashboard</a>
+                </div>
+            </div>
+            
+            <!-- Critical Risk -->
+            <div class="dashboard-card">
+                <div class="card-header critical">CRITICAL RISK Customer View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        70%+ risk score. Urgent action required. Immediate contact, evidence gathering, and strict compliance deadlines.
+                    </p>
+                    <ul class="card-features">
+                        <li>Urgent alerts & messaging</li>
+                        <li>4-hour response deadline</li>
+                        <li>Evidence upload sections</li>
+                        <li>Compliance requirements</li>
+                        <li>5-stage timeline</li>
+                    </ul>
+                    <a href="customer_view_critical.html" class="btn btn-critical">View Critical Template</a>
+                </div>
+            </div>
+            
+            <!-- High Risk -->
+            <div class="dashboard-card">
+                <div class="card-header high">HIGH RISK Customer View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        50-70% risk score. Priority attention needed. Collaborative approach with 48-hour response windows.
+                    </p>
+                    <ul class="card-features">
+                        <li>Priority messaging</li>
+                        <li>48-hour response window</li>
+                        <li>Evidence checklist</li>
+                        <li>Standard compliance</li>
+                        <li>4-stage timeline</li>
+                    </ul>
+                    <a href="customer_view_high.html" class="btn btn-high">View High Template</a>
+                </div>
+            </div>
+            
+            <!-- Medium Risk -->
+            <div class="dashboard-card">
+                <div class="card-header medium">MEDIUM RISK Customer View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        30-50% risk score. Monitoring status. Standard procedures apply with 1-week timeline.
+                    </p>
+                    <ul class="card-features">
+                        <li>Informational tone</li>
+                        <li>1-week timeline</li>
+                        <li>Basic action items</li>
+                        <li>Monitor & respond</li>
+                        <li>3-stage timeline</li>
+                    </ul>
+                    <a href="customer_view_medium.html" class="btn btn-medium">View Medium Template</a>
+                </div>
+            </div>
+            
+            <!-- Low Risk -->
+            <div class="dashboard-card">
+                <div class="card-header low">LOW RISK Customer View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        0-30% risk score. Routine handling. Reassuring messaging with standard SLA timelines.
+                    </p>
+                    <ul class="card-features">
+                        <li>Reassuring tone</li>
+                        <li>Standard 2-3 week SLA</li>
+                        <li>Minimal action items</li>
+                        <li>Optional involvement</li>
+                        <li>3-stage timeline</li>
+                    </ul>
+                    <a href="customer_view_low.html" class="btn btn-low">View Low Template</a>
+                </div>
+            </div>
+            
+            <!-- Analysis Dashboard -->
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);">Early Dispute Detection</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Interactive analysis dashboard showing detected dispute signals, risk analysis, and recommended actions.
+                    </p>
+                    <ul class="card-features">
+                        <li>Signal detection engine</li>
+                        <li>Risk scoring algorithm</li>
+                        <li>Case analysis detail</li>
+                        <li>Pattern matching</li>
+                        <li>Actionable recommendations</li>
+                    </ul>
+                    <a href="early_dispute_detection.html" class="btn btn-primary" style="background: #ec4899;">View Analysis Dashboard</a>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Merchant / Seller Drilldown</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Drill into merchant risk exposure, unresolved case workflows, evidence actions, issuer simulation, and marketplace case creation.
+                    </p>
+                    <ul class="card-features">
+                        <li>Merchant exposure drilldown</li>
+                        <li>Case status workflow</li>
+                        <li>Evidence ready actions</li>
+                        <li>Issuer resolution simulation</li>
+                        <li>Marketplace dispute creation</li>
+                    </ul>
+                    <a href="merchant_dashboard.html" class="btn btn-primary">Open Merchant Dashboard</a>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #0f766e 0%, #047857 100%);">Compliance Management</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Track compliance arbitration, payment provider coordination, and improvement areas for issued disputes.
+                    </p>
+                    <ul class="card-features">
+                        <li>Payment brand arbitration workflow</li>
+                        <li>Provider-specific evidence tracking</li>
+                        <li>Top merchants by exposure</li>
+                        <li>Amount by status charts</li>
+                        <li>Compliance improvement actions</li>
+                    </ul>
+                    <a href="compliance_management_dashboard.html" class="btn btn-primary" style="background: #047857;">View Compliance Dashboard</a>
+                </div>
+            </div>
+            
+            <!-- Early Dispute HIGH Risk View -->
+            <div class="dashboard-card">
+                <div class="card-header high">Early Dispute - HIGH Risk Agent View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Agent guidance for HIGH risk (50-70%) early disputes. Includes signal detection, evidence requests, and escalation templates for customer support teams.
+                    </p>
+                    <ul class="card-features">
+                        <li>Agent recommendations</li>
+                        <li>Evidence checklists</li>
+                        <li>Priority handling workflow</li>
+                        <li>Escalation guidance</li>
+                        <li>48-hour response templates</li>
+                    </ul>
+                    <a href="early_dispute_detection_high.html" class="btn btn-high">View HIGH Risk Agent View</a>
+                </div>
+            </div>
+            
+            <!-- Early Dispute CRITICAL Risk View -->
+            <div class="dashboard-card">
+                <div class="card-header critical">Early Dispute - CRITICAL Risk Agent View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Agent guidance for CRITICAL risk (70%+) early disputes. Urgent escalation protocols, immediate evidence collection, and fraud indicators.
+                    </p>
+                    <ul class="card-features">
+                        <li>Urgent escalation checklist</li>
+                        <li>Fraud pattern detection</li>
+                        <li>Immediate action items</li>
+                        <li>Evidence fast-track</li>
+                        <li>Manager notification triggers</li>
+                    </ul>
+                    <a href="early_dispute_detection_critical.html" class="btn btn-critical">View CRITICAL Risk Agent View</a>
+                </div>
+            </div>
+            
+            <!-- Early Dispute Merchant View -->
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);">Early Dispute - Merchant View</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Merchant-level early dispute analysis. Aggregated signals, customer activity tracking, and risk manager guidance for dispute holds and escalations.
+                    </p>
+                    <ul class="card-features">
+                        <li>Merchant signal summary</li>
+                        <li>Open cases aggregation</li>
+                        <li>Customer activity tracking</li>
+                        <li>Hold review guidance</li>
+                        <li>Evidence escalation routes</li>
+                    </ul>
+                    <a href="early_dispute_merchant_view.html" class="btn btn-primary" style="background: #7c3aed;">View Merchant Early Dispute View</a>
+                </div>
+            </div>
+            
+            <!-- Early Dispute All Customers Overview -->
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">Early Dispute - All Customers Overview</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Aggregated early dispute analysis for all customers. See customer count, signal severity, evidence gaps, and next recommended actions.
+                    </p>
+                    <ul class="card-features">
+                        <li>Customer dispute status tracking</li>
+                        <li>Evidence action summary</li>
+                        <li>Risk distribution view</li>
+                        <li>Bulk action recommendations</li>
+                        <li>SLA timeline monitoring</li>
+                    </ul>
+                    <a href="early_dispute_all_customers.html" class="btn btn-primary" style="background: #0891b2;">View All Customers Overview</a>
+                </div>
+            </div>
+
+            <!-- Compliance Management Dashboard -->
+            <div class="dashboard-card">
+                <div class="card-header critical">🔍 Compliance Management</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Monitor merchant compliance status and risk factors. Track investigation findings, manage holds, and issue compliance decisions based on chargeback exposure.
+                    </p>
+                    <ul class="card-features">
+                        <li>Merchant compliance investigations</li>
+                        <li>Case aggregation & risk scoring</li>
+                        <li>Investigation timeline tracking</li>
+                        <li>Hold management & releases</li>
+                        <li>Compliance decision reporting</li>
+                    </ul>
+                    <a href="compliance_management.html" class="btn btn-critical">View Compliance Management</a>
+                </div>
+            </div>
+
+            <!-- Resolution Center - Merchant View -->
+            <div class="dashboard-card">
+                <div class="card-header admin" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🏦 Resolution Center - Merchant</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Manage chargebacks and disputes from the merchant perspective. Request money for defended transactions, send refunds, and track resolution outcomes.
+                    </p>
+                    <ul class="card-features">
+                        <li>Money Request management</li>
+                        <li>Chargeback defense tracking</li>
+                        <li>Resolution timeline</li>
+                        <li>Merchant payout tracking</li>
+                        <li>Dispute resolution history</li>
+                    </ul>
+                    <a href="resolution_center_merchant.html" class="btn btn-primary" style="background: #667eea;">Resolution Center - Merchant</a>
+                </div>
+            </div>
+
+            <!-- Resolution Center - Customer View -->
+            <div class="dashboard-card">
+                <div class="card-header low" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">💳 Resolution Center - Customer</div>
+                <div class="card-body">
+                    <p class="card-description">
+                        Track disputes and refunds from the customer perspective. File charges, monitor chargeback status, and track refund settlements.
+                    </p>
+                    <ul class="card-features">
+                        <li>Report disputed charges</li>
+                        <li>Refund tracking</li>
+                        <li>Chargeback status monitoring</li>
+                        <li>Settlement timeline</li>
+                        <li>Dispute documentation</li>
+                    </ul>
+                    <a href="resolution_center_customer.html" class="btn btn-low" style="background: #10b981;">Resolution Center - Customer</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How to Use Section -->
+        <div class="info-section">
+            <h2>How to Use This System</h2>
+            <p><strong>For Administration:</strong></p>
+            <ul class="card-features">
+                <li>Start with Merchant Admin Dashboard for overview</li>
+                <li>View case statistics and risk distribution</li>
+                <li>Click case ID to view specific customer page</li>
+                <li>Export data for reporting and analysis</li>
+            </ul>
+            
+            <p style="margin-top: 20px;"><strong>For Customer Communication:</strong></p>
+            <ul class="card-features">
+                <li>Select appropriate risk-level template</li>
+                <li>Customize with customer-specific details</li>
+                <li>Share via email, support portal, or SMS</li>
+                <li>Track customer actions and responses</li>
+            </ul>
+            
+            <p style="margin-top: 20px;"><strong>For Analysis:</strong></p>
+            <ul class="card-features">
+                <li>Review Early Dispute Detection report</li>
+                <li>Identify early warning signals</li>
+                <li>Take proactive measures before chargebacks</li>
+                <li>Monitor trends over time</li>
+            </ul>
+        </div>
+        
+        <!-- System Files Section -->
+        <div class="info-section">
+            <h2>Generated System Files</h2>
+            <p>The following files have been generated in your output/ folder:</p>
+            <div class="file-list">
+                <p><strong>Dashboards:</strong></p>
+                <p>- merchant_dashboard.html</p>
+                <p>- customer_view_critical.html</p>
+                <p>- customer_view_high.html</p>
+                <p>- customer_view_medium.html</p>
+                <p>- customer_view_low.html</p>
+                <p>- early_dispute_detection.html</p>
+                <p>- early_dispute_merchant_view.html</p>
+                <p>- early_dispute_all_customers.html</p>
+                
+                <p style="margin-top: 15px;"><strong>Data & Reports:</strong></p>
+                <p>- chargeback_records.xlsx (Excel dataset)</p>
+                <p>- dispute_detection_results.json (Analysis results)</p>
+                <p>- ANALYSIS_SUMMARY.md (System documentation)</p>
+            </div>
+        </div>
+        
+        <!-- Next Steps -->
+        <div class="info-section">
+            <h2>Next Steps</h2>
+            <p><strong>1. Customize Sample Data</strong></p>
+            <p style="margin-left: 20px; color: #888;">Edit chargeback_records.xlsx with your actual case data. This powers merchant dashboard statistics.</p>
+            
+            <p style="margin-top: 15px;"><strong>2. Add Evidence Files</strong></p>
+            <p style="margin-left: 20px; color: #888;">Place customer chat transcripts in: evidence/CASEID/chat_CASEID.txt</p>
+            <p style="margin-left: 20px; color: #888;">Run: python scripts/run_analysis.py to analyze automatically</p>
+            
+            <p style="margin-top: 15px;"><strong>3. Customize Customer Messages</strong></p>
+            <p style="margin-left: 20px; color: #888;">Edit the HTML customer views to match your branding and policies</p>
+            
+            <p style="margin-top: 15px;"><strong>4. Set Up Integration</strong></p>
+            <p style="margin-left: 20px; color: #888;">Connect dispute_detection_results.json to your case management system</p>
+            <p style="margin-left: 20px; color: #888;">Schedule weekly analysis runs with: python scripts/run_analysis.py</p>
+        </div>
+        
+        <footer>
+            <p>Chargeback & Dispute Management Suite | All dashboards are responsive and work on desktop, tablet, and mobile</p>
+            <p style="margin-top: 10px; opacity: 0.8; font-size: 0.9em;">For more information, see ANALYSIS_SUMMARY.md and resources/ folder</p>
+        </footer>
+    </div>
+</body>
+</html>

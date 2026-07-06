@@ -1,0 +1,19 @@
+Document ID: DOC-PAYOUT-REC-008
+Type: Payout Reconciliation Worksheet
+
+Columns:
+- Case ID
+- Payment Method
+- Original Amount
+- Disputed Amount
+- Interim Refund
+- Final Payout
+- Airbnb Fee
+- Net Settlement
+
+Checks:
+- Final payout plus fee must reconcile to settlement ledger.
+- Any variance above 0.01 must include explanation note.
+
+Usage:
+- Attach worksheet to final payout approval and issue steps.

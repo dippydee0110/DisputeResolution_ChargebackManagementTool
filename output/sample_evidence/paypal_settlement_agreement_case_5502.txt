@@ -1,0 +1,19 @@
+Document: PayPal Settlement Agreement
+Case ID: CASE-PAYPAL-5502
+Payment Method: PayPal
+Prepared By: Airbnb Resolution Operations
+Finalized On: 2026-06-27
+
+Agreement Terms:
+- Buyer accepted negotiated settlement amount.
+- Seller accepted closure without further escalation.
+- Both parties agreed to close in PayPal Resolution Center.
+
+Evidence Included:
+1. Transaction reference and order summary.
+2. Buyer complaint narrative.
+3. Seller support evidence and response trail.
+
+Closure:
+- PayPal dispute status set to Closed.
+- No additional chargeback escalation requested.

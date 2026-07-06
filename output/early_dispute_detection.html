@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Dispute - Customer Representative View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        
+        .alert-banner {
+            background: #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .stat-box.critical .stat-value {
+            color: #dc2626;
+        }
+        
+        .stat-box.high .stat-value {
+            color: #f59e0b;
+        }
+        
+        .case-card {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid #ddd;
+            transition: all 0.2s;
+        }
+        
+        .case-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .case-card.critical {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .case-card.high {
+            border-left-color: #f59e0b;
+            background: #fffbf0;
+        }
+        
+        .case-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .case-id {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        .risk-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #f3f4f6;
+        }
+        
+        .risk-score.critical {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .risk-score.high {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        
+        .risk-score.medium {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .risk-level {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        
+        .case-body {
+            padding: 20px;
+        }
+        
+        .signals-list {
+            margin-bottom: 15px;
+        }
+        
+        .signals-list h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .signal-item {
+            background: #f9fafb;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            border-left: 3px solid #ddd;
+        }
+        
+        .signal-item.high {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .signal-item.medium {
+            border-left-color: #f59e0b;
+            background: #fffbf0;
+        }
+        
+        .signal-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .signal-pattern {
+            color: #666;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+        
+        .recommendation {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .priority-badge.critical {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .priority-badge.high {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px 0 28px 0;
+        }
+        .quick-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            color: white;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .quick-links a:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        .quick-link-high {
+            background: #f59e0b;
+        }
+        .quick-link-critical {
+            background: #dc2626;
+        }
+        
+        #chatLog {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95em;
+            color: #0f172a;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.user {
+            background: #dbeafe;
+            color: #1e3a8a;
+            text-align: left;
+        }
+
+        .chat-message.assistant {
+            background: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        #chatLog {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95em;
+            color: #0f172a;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.user {
+            background: #dbeafe;
+            color: #1e3a8a;
+            text-align: left;
+        }
+
+        .chat-message.assistant {
+            background: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        #chatLog {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95em;
+            color: #0f172a;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            line-height: 1.5;
+        }
+
+        .chat-message.user {
+            background: #dbeafe;
+            color: #1e3a8a;
+            text-align: left;
+        }
+
+        .chat-message.assistant {
+            background: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .case-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Early Dispute - Customer Representative View</h1>
+            <p style="color: #666; margin-top: 5px;">Structured early dispute guidance for customer service and dispute intake teams.</p>
+            <p style="color: #999; font-size: 0.9em; margin-top: 10px;">Generated: 2026-06-24 10:03:09</p>
+        </header>
+        
+        <div class="alert-banner">
+            <strong>[STATS] Summary:</strong> Analyzed 1 chatbot session(s).
+            Found <strong>0 CRITICAL</strong> and <strong>0 HIGH RISK</strong> cases.
+            Immediate attention recommended for flagged cases.
+        </div>
+
+        <div class="quick-links">
+            <a href="early_dispute_detection_high.html" class="quick-link-high">Go to HIGH Risk View</a>
+            <a href="early_dispute_detection_critical.html" class="quick-link-critical">Go to CRITICAL Risk View</a>
+            <a href="early_dispute_merchant_view.html" class="quick-link-high">Go to Merchant Early Dispute View</a>
+            <a href="early_dispute_all_customers.html" class="quick-link-critical">Go to All Customers Overview</a>
+        </div>
+        
+        <div class="section" style="margin-top:24px;">
+            <h2>Chat-Based Early Dispute Simulation</h2>
+            <p>Enter a customer dispute note and let the simulated assistant surface early signals.</p>
+            <div style="background:white; border-radius:16px; border:1px solid #e5e7eb; padding:18px; margin-bottom:12px;">
+                <div id="chatLog" style="min-height:150px; max-height:260px; overflow-y:auto; padding:12px; border:1px solid #cbd5e1; border-radius:12px; background:#f8fafc;"></div>
+                <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                    <input id="chatInput" type="text" placeholder="Type dispute details or customer message..." style="flex:1; min-width:220px; padding:12px; border:1px solid #cbd5e1; border-radius:12px;">
+                    <button onclick="submitChatMessage()" style="background:#2563eb; color:white; border:none; border-radius:12px; padding:12px 18px; cursor:pointer;">Submit</button>
+                    <button onclick="runChatAnalysis()" style="background:#f59e0b; color:white; border:none; border-radius:12px; padding:12px 18px; cursor:pointer;">Analyze</button>
+                </div>
+            </div>
+            <div id="chatSummary" style="background:#eff6ff; border-left:4px solid #2563eb; border-radius:12px; padding:16px; color:#1e40af; display:none;"></div>
+        </div>
+        
+        <div class="section" style="margin-top:24px; display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+            <div style="flex:1 1 360px; min-width:280px; background:white; border-radius:18px; border:1px solid #e5e7eb; padding:22px; box-shadow:0 8px 22px rgba(15,23,42,0.08);">
+                <h2 style="color:#1e3a8a; margin-bottom:14px;">Fast Agent Handoff</h2>
+                <p style="color:#475569; line-height:1.7; margin-bottom:16px;">Use this widget to create a concise summary for escalation or next-step communication.</p>
+                <ul style="color:#334155; line-height:1.8; list-style:disc; padding-left:18px; margin-bottom:18px;">
+                    <li>Risk level from chat analysis</li>
+                    <li>Recommended next step for the customer</li>
+                    <li>Key evidence signals detected</li>
+                </ul>
+                <button onclick="copyHandoffSummary()" style="background:#2563eb; color:white; border:none; border-radius:12px; padding:12px 18px; cursor:pointer;">Copy Handoff Summary</button>
+            </div>
+            <div style="flex:1 1 280px; min-width:220px; background:#f8fafc; border-radius:18px; border:1px solid #dbeafe; padding:22px; box-shadow:0 8px 22px rgba(15,23,42,0.06);">
+                <h3 style="color:#1e40af; margin-bottom:14px;">Handoff Notes</h3>
+                <p id="handoffNotes" style="color:#1f2937; line-height:1.8; min-height:92px;">Analysis output will be copied here once available.</p>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box critical">
+                <div class="stat-value">0</div>
+                <div class="stat-label">CRITICAL Risk</div>
+            </div>
+            <div class="stat-box high">
+                <div class="stat-value">0</div>
+                <div class="stat-label">HIGH Risk</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">1</div>
+                <div class="stat-label">[INFO] Total Analyzed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">1</div>
+                <div class="stat-label">[WARNING] Avg Signals/Case</div>
+            </div>
+        </div>
+        
+        <h2 style="color: #333; margin: 30px 0 20px 0; font-size: 1.5em;">Detailed Case Analysis</h2>
+        
+
+        <div class="case-card ">
+            <div class="case-header">
+                <div>
+                    <div class="case-id">CASE123</div>
+                    <div style="font-size: 0.9em; color: #666; margin-top: 5px;">1 signals detected</div>
+                </div>
+                <div class="risk-score ">12.5%</div>
+            </div>
+            <div class="case-body">
+                <div style="margin-bottom: 15px;">
+                    <strong>Risk Level:</strong> [LOW] LOW
+                </div>
+                <div class="signals-list">
+                    <h4>[WARNING] Detected Signals (1):</h4>
+                    
+            <div class="signal-item high">
+                <div class="signal-name">Unrecognized Transaction</div>
+                <div class="signal-pattern">Pattern: "don't recognize"</div>
+            </div>
+            
+                </div>
+                <div class="recommendation">
+                    <strong>[OK] Recommended Action:</strong><br>
+                    STANDARD: Routine handling, document interactions
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>[INFO] Use this report to prioritize case reviews and take proactive measures to prevent chargebacks.</p>
+        </footer>
+    </div>
+    <script>
+        const chatLog = document.getElementById('chatLog');
+        const chatInput = document.getElementById('chatInput');
+        const chatSummary = document.getElementById('chatSummary');
+        const handoffNotes = document.getElementById('handoffNotes');
+
+        function appendChatMessage(text, sender) {
+            const message = document.createElement('div');
+            message.className = 'chat-message ' + sender;
+            message.textContent = text;
+            chatLog.appendChild(message);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function submitChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            appendChatMessage(text, 'user');
+            chatInput.value = '';
+            setTimeout(() => {
+                appendChatMessage('Received. When you are ready, click Analyze to identify early dispute signals and recommended next steps.', 'assistant');
+            }, 250);
+        }
+
+        function runChatAnalysis() {
+            const draftInput = chatInput.value.trim();
+            const combinedInput = `${chatLog.textContent}\n${draftInput}`.trim();
+            if (!combinedInput) {
+                alert('Please enter a dispute note before analyzing.');
+                return;
+            }
+
+            const lower = combinedInput.toLowerCase();
+            const summary = [];
+
+            const signalRules = [
+                {
+                    key: 'unrecognized_transaction',
+                    weight: 0.25,
+                    message: 'Unrecognized or unauthorized transaction signal detected.',
+                    patterns: ["don't recognize", "didn't order", 'unauthorized', 'not me', 'never authorized', "didn't purchase", 'not familiar', 'fraud', 'stolen card']
+                },
+                {
+                    key: 'refund_request',
+                    weight: 0.20,
+                    message: 'Refund or reimbursement request detected.',
+                    patterns: ['refund', 'money back', 'return', 'reimburs', 'credit', 'reverse charge', 'get my money']
+                },
+                {
+                    key: 'item_not_received',
+                    weight: 0.20,
+                    message: 'Service or delivery dispute signal detected.',
+                    patterns: ["didn't receive", 'no delivery', 'not delivered', 'where is my', "haven't got", 'missing package', 'item never arrived', 'tracking shows', 'lost']
+                },
+                {
+                    key: 'quality_complaint',
+                    weight: 0.15,
+                    message: 'Quality or product mismatch complaint detected.',
+                    patterns: ['wrong item', 'damaged', 'broken', 'defective', 'poor quality', 'not as described', 'fake', 'counterfeit', 'wrong size', 'not working']
+                },
+                {
+                    key: 'duplicate_charge',
+                    weight: 0.18,
+                    message: 'Duplicate or repeated charge signal detected.',
+                    patterns: ['charged twice', 'double charge', 'duplicate', 'multiple charges', 'extra charge', 'charged again']
+                },
+                {
+                    key: 'merchant_mismatch',
+                    weight: 0.15,
+                    message: 'Merchant mismatch signal detected.',
+                    patterns: ['charge from', 'who is', "don't recognize the name", 'weird charge', 'strange merchant', 'unfamiliar merchant']
+                },
+                {
+                    key: 'frustration_escalation',
+                    weight: 0.15,
+                    message: 'Escalation or dispute intent language detected.',
+                    patterns: ['upset', 'angry', 'frustrated', 'ridiculous', 'unacceptable', 'terrible', 'worst', 'never again', 'chargeback', 'dispute', 'report this', 'critical', 'escalate']
+                },
+                {
+                    key: 'urgent_tone',
+                    weight: 0.10,
+                    message: 'Urgent tone detected.',
+                    patterns: ['asap', 'urgent', 'immediately', 'hurry', 'now', 'emergency', 'quick', 'fast', '!!!', '???', 'help']
+                }
+            ];
+
+            let totalWeight = 0;
+            let highSeverityMatches = 0;
+
+            signalRules.forEach((rule) => {
+                const matched = rule.patterns.some((phrase) => lower.includes(phrase));
+                if (matched) {
+                    totalWeight += rule.weight;
+                    summary.push(rule.message);
+                    if (rule.weight >= 0.18) {
+                        highSeverityMatches += 1;
+                    }
+                }
+            });
+
+            let riskScore = Math.min(totalWeight / (signalRules.length * 0.25), 0.95);
+            if (highSeverityMatches >= 3) {
+                riskScore = Math.min(riskScore * 1.2, 0.95);
+            }
+
+            const hasCriticalFraudLanguage =
+                lower.includes('fraud') ||
+                lower.includes('unauthorized') ||
+                lower.includes('stolen card') ||
+                lower.includes('chargeback filed');
+            const hasEscalationIntent =
+                lower.includes('chargeback') ||
+                lower.includes('dispute') ||
+                lower.includes('critical') ||
+                lower.includes('escalate');
+
+            // Keep severe statements from being under-classified as low risk.
+            if (hasCriticalFraudLanguage && hasEscalationIntent) {
+                riskScore = Math.max(riskScore, 0.75);
+            } else if (hasCriticalFraudLanguage) {
+                riskScore = Math.max(riskScore, 0.55);
+            } else if (hasEscalationIntent) {
+                riskScore = Math.max(riskScore, 0.35);
+            }
+
+            let risk = 'LOW';
+            let priority = 'Routine handling and standard follow-up.';
+            if (riskScore >= 0.7) {
+                risk = 'CRITICAL';
+                priority = 'Urgent escalation. Request authorization evidence and open a hold review.';
+            } else if (riskScore >= 0.5) {
+                risk = 'HIGH';
+                priority = 'High priority. Review case immediately and prepare an evidence package.';
+            } else if (riskScore >= 0.3) {
+                risk = 'MEDIUM';
+                priority = 'Monitor closely and gather supporting notes and evidence.';
+            }
+
+            if (!summary.length) {
+                summary.push('No strong early dispute keywords detected; continue standard intake and evidence logging.');
+            }
+
+            const scorePct = `${Math.round(riskScore * 100)}%`;
+            const resultText = `Analysis Result: Risk level ${risk} (${scorePct}). Next step: ${priority} Signals: ${summary.join(' ')}`;
+            chatSummary.style.display = 'block';
+            chatSummary.innerHTML = `<strong>Analysis Result:</strong> Risk level <strong>${risk}</strong> (${scorePct}).<br><strong>Next step:</strong> ${priority}<br><strong>Signals:</strong> ${summary.join(' ')}`;
+            appendChatMessage(`Analysis complete. Risk level set to ${risk} (${scorePct}).`, 'assistant');
+            handoffNotes.textContent = resultText;
+        }
+
+        function copyHandoffSummary() {
+            const text = handoffNotes.textContent.trim();
+            if (!text) {
+                alert('Run the analysis first to generate handoff notes.');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Handoff summary copied to clipboard.');
+            }).catch(() => {
+                alert('Could not copy to clipboard. Please copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>

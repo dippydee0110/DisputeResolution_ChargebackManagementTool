@@ -1,0 +1,17 @@
+Document: Klarna Auto-Closure Decision
+Case ID: CASE-KLARNA-2201
+Payment Method: Klarna
+Source: Klarna Disputes Automation
+Decision Time: 2026-07-01 09:40 UTC
+
+Decision Basis:
+- Duplicate claim signatures detected.
+- Merchant records validated against order and settlement references.
+- No unresolved material mismatch remained after validation.
+
+Result:
+- Claim auto-closed by payment method workflow.
+- No further action required unless manual appeal is filed.
+
+Airbnb Note:
+- Case synchronized as Closed in dispute operations dashboard.

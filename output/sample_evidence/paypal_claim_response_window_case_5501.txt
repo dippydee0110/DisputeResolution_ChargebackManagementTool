@@ -1,0 +1,16 @@
+Document: PayPal Claim Response Window Notice
+Case ID: CASE-PAYPAL-5501
+Payment Method: PayPal
+Source: PayPal Resolution Center
+Generated On: 2026-07-04
+
+Notice:
+- Seller response required within the configured response window.
+- Required files: transaction proof, service delivery proof, communication records.
+
+Policy Guidance:
+- If seller does not respond in time, PayPal may auto-decide in buyer favor.
+- Attach concise, verifiable, and timestamped documents only.
+
+Current Status:
+- Waiting for final seller evidence submission.

@@ -1,0 +1,5 @@
+Merchant-customer case linking (sync between dashboards)
+Property-level details and filtering
+AI-enabled merchant preference rules
+Automatic case closure workflows
+In-app messaging between parties

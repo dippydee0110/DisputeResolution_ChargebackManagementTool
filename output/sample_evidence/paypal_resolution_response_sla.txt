@@ -1,0 +1,21 @@
+Document ID: DOC-PP-SLA-003
+Type: PayPal Response SLA
+
+PayPal Workflow:
+- Claim opened in PayPal Resolution Center.
+- Seller response requested with supporting proof.
+- Airbnb validates records and sends structured response.
+- PayPal issues determination or requests settlement confirmation.
+
+Operational SLA:
+- Initial acknowledgement: within 24 hours.
+- Evidence upload to PayPal: within 72 hours.
+- Final package review by Airbnb: before day 7.
+
+Required Fields:
+- PayPal transaction ID.
+- Booking reference and property details.
+- Evidence index and response narrative.
+
+Escalation Trigger:
+- If no seller response is submitted by SLA, classify as high-loss risk.

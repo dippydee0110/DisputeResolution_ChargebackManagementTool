@@ -1,0 +1,20 @@
+Evidence ID: EV-HOST-011
+Type: Cleaning Invoice
+Submitted By: Host
+Vendor: Sparkle Turns LLC
+Invoice #: ST-99214
+Amount: $125.00
+Service Date: 2026-06-29
+Property: Lakeview Apartment
+
+Scope:
+- Full kitchen wipe-down
+- Linen replacement
+- Bathroom sanitization
+
+Potential Gap:
+- Service end time listed as 15:00, guest check-in window started 17:00.
+- No signed handoff note from host or co-host.
+
+Supporting Ask:
+- Guest to provide exact check-in timestamp and first photo timestamp from arrival.

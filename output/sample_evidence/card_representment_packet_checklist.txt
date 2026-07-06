@@ -1,0 +1,18 @@
+Document ID: DOC-CARD-REP-002
+Type: Card Representment Checklist
+Owner: Airbnb Disputes Operations
+
+Representment Packet Must Include:
+- Dispute summary with reason code mapping.
+- Transaction proof (authorization + settlement).
+- Fulfillment proof (stay/check-in or service delivery).
+- Communication evidence with timestamps.
+- Policy acknowledgement signed by merchant.
+
+Quality Controls:
+- All timestamps must be in UTC and local property time.
+- Guest and merchant names must match case profile records.
+- Amounts must reconcile with payout and fee ledger.
+
+Submission Rule:
+- Submit packet no later than 48 hours before issuer deadline.

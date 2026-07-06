@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Dispute - Merchant View</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%); color:#0f172a; padding:24px; }
+        .container { max-width:1180px; margin:0 auto; }
+        header { background:white; padding:28px; border-radius:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:24px; border-left:8px solid #2563eb; }
+        h1 { font-size:2.2em; color:#1e3a8a; margin-bottom:8px; }
+        p.lead { color:#475569; line-height:1.8; margin-bottom:16px; }
+        .badge { display:inline-flex; align-items:center; gap:8px; font-size:0.85em; font-weight:700; padding:8px 12px; border-radius:999px; }
+        .badge-critical { background:#fee2e2; color:#b91c1c; }
+        .badge-high { background:#ffedd5; color:#c2410c; }
+        .badge-medium { background:#e0f2fe; color:#0369a1; }
+        .section { background:white; border-radius:18px; padding:26px; box-shadow:0 10px 24px rgba(15,23,42,0.08); margin-bottom:24px; }
+        .section h2 { color:#1e40af; margin-bottom:16px; font-size:1.4em; }
+        .section p { color:#475569; line-height:1.75; margin-bottom:16px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-bottom:22px; }
+        .summary-card { background:#f8fafc; border-radius:16px; padding:20px; border:1px solid #e2e8f0; }
+        .summary-card strong { display:block; font-size:1.4em; color:#111827; margin-bottom:8px; }
+        .summary-card span { color:#475569; font-size:0.95em; }
+        .table { width:100%; border-collapse:collapse; margin-top:16px; }
+        .table th, .table td { padding:14px 16px; border-bottom:1px solid #e2e8f0; text-align:left; }
+        .table th { background:#f1f5f9; color:#0f172a; font-weight:700; }
+        .table tr:hover { background:#f8fafc; }
+        .btn { border:none; border-radius:12px; padding:10px 18px; cursor:pointer; font-weight:700; transition:transform .2s; }
+        .btn-primary { background:#2563eb; color:white; }
+        .btn-secondary { background:#1d4ed8; color:white; }
+        .btn-small { font-size:0.9em; padding:8px 14px; }
+        .nav-links { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; }
+        .nav-link { color:#2563eb; text-decoration:none; font-weight:700; }
+        .activity-list { list-style:none; padding-left:0; display:grid; gap:12px; }
+        .activity-item { background:#f8fafc; border-radius:14px; padding:16px; border:1px solid #e2e8f0; }
+        .activity-item strong { display:block; margin-bottom:6px; color:#0f172a; }
+        .activity-item span { color:#475569; font-size:0.95em; }
+        @media (max-width:900px) { .summary-grid { grid-template-columns:1fr; } .table th, .table td { padding:12px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Early Dispute - Merchant View</h1>
+            <p class="lead">Merchant-level early dispute guidance for risk managers. Review aggregated merchant signals, track customer activity, and route cases to the appropriate customer view.</p>
+            <div class="nav-links">
+                <a class="nav-link" href="early_dispute_detection.html">Back to Customer Representative View</a>
+                <a class="nav-link" href="early_dispute_all_customers.html">All Customers Overview</a>
+                <a class="nav-link" href="merchant_dashboard.html">Merchant Risk Dashboard</a>
+            </div>
+        </header>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <strong>4</strong>
+                <span>Merchants flagged for early dispute</span>
+            </div>
+            <div class="summary-card">
+                <strong>11</strong>
+                <span>Open merchant disputes</span>
+            </div>
+            <div class="summary-card">
+                <strong>3</strong>
+                <span>High/critical merchant risk alerts</span>
+            </div>
+            <div class="summary-card">
+                <strong>72%</strong>
+                <span>Merchant signal correlation score</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Merchant Signal Summary</h2>
+            <p>These merchants show early dispute activity across multiple customers. Use this view to prioritize merchant holds, coordinate evidence collection, and connect customer activity to the correct response template.</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Merchant</th>
+                        <th>Open Cases</th>
+                        <th>Risk Level</th>
+                        <th>Latest Activity</th>
+                        <th>Suggested Action</th>
+                        <th>Customer View</th>
+                    </tr>
+                </thead>
+                <tbody id="merchantTable"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Customer Activity Tracking</h2>
+            <p>Monitor the latest customer engagement and dispute evidence collection status for each merchant. This helps identify whether merchant hold review or immediate escalation is needed.</p>
+            <ul class="activity-list" id="activityList"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Merchant Guidance</h2>
+            <p><strong>Use this checklist when reviewing merchant-level early disputes:</strong></p>
+            <ul class="activity-list">
+                <li class="activity-item"><strong>Confirm merchant pattern:</strong> Multiple customers disputing the same merchant or product line may indicate a systemic issue.</li>
+                <li class="activity-item"><strong>Escalate high/critical merchants:</strong> Treat merchants with high risk aggregates as candidates for temporary hold review and deeper evidence collection.</li>
+                <li class="activity-item"><strong>Route to customer templates:</strong> Link each case to the appropriate customer-facing risk-level view for consistent messaging.</li>
+                <li class="activity-item"><strong>Track evidence status:</strong> Ensure merchant supplies authorization receipts, delivery proof, or service confirmation before filing representment.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const merchants = [
+            { merchant: 'TechStore Pro', cases: 3, risk: 'High', score: 0.65, activity: 'Customer reports unauthorized orders, inconsistent shipping updates', caseId: 'CASE123' },
+            { merchant: 'TravelSmart Agency', cases: 2, risk: 'Critical', score: 0.91, activity: 'Fraud notices and multiple chargebacks in 24 hours', caseId: 'CASE127' },
+            { merchant: 'FashionHub Online', cases: 1, risk: 'High', score: 0.62, activity: 'Service not provided claim with incomplete shipping evidence', caseId: 'CASE124' },
+            { merchant: 'GardenPro Supplies', cases: 1, risk: 'Medium', score: 0.45, activity: 'Late delivery report and service dissatisfaction', caseId: 'CASE128' }
+        ];
+
+        function getCustomerViewForScore(score) {
+            if (score >= 0.7) return 'customer_view_critical.html';
+            if (score >= 0.5) return 'customer_view_high.html';
+            if (score >= 0.3) return 'customer_view_medium.html';
+            return 'customer_view_low.html';
+        }
+
+        function renderMerchantTable() {
+            const tbody = document.getElementById('merchantTable');
+            tbody.innerHTML = '';
+            merchants.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.merchant}</strong></td>
+                    <td>${item.cases}</td>
+                    <td><span class="badge badge-${item.risk.toLowerCase()}">${item.risk}</span></td>
+                    <td>${item.activity}</td>
+                    <td>${item.risk === 'Critical' ? 'Open hold review and notify risk team' : item.risk === 'High' ? 'Collect evidence and monitor closely' : 'Review customer context and standard follow-up'}</td>
+                    <td><button class="btn btn-secondary btn-small" onclick="openCustomerView(${item.score})">Open ${item.risk} Customer View</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderActivityList() {
+            const list = document.getElementById('activityList');
+            list.innerHTML = '';
+            merchants.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'activity-item';
+                li.innerHTML = `
+                    <strong>${item.merchant}:</strong>
+                    <span>${item.activity}</span>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function openCustomerView(score) {
+            const page = getCustomerViewForScore(score);
+            window.open(page, '_blank');
+        }
+
+        renderMerchantTable();
+        renderActivityList();
+    </script>
+</body>
+</html>

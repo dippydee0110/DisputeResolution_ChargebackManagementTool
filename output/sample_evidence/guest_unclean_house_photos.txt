@@ -1,0 +1,16 @@
+Evidence ID: EV-GUEST-001
+Type: Photo Set (simulated metadata)
+Submitted By: Guest
+Case Context: Complaints about property cleanliness and access
+
+Photo Notes:
+1) 2026-06-29 18:42 - Kitchen counter residue and used dishes.
+2) 2026-06-29 18:44 - Bathroom sink stain near faucet.
+3) 2026-06-29 18:46 - Garage side lock appears bent.
+
+Potential Gap:
+- No full-room video continuity proving conditions at check-in.
+- Metadata extracted from screenshots; original EXIF not attached.
+
+Requested Follow-up:
+- Host to provide pre-check-in cleaning checklist and timestamped turnover photos.

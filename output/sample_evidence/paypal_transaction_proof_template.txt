@@ -1,0 +1,21 @@
+Document ID: DOC-PP-PROOF-004
+Type: PayPal Transaction Proof Template
+
+Template Fields:
+- Transaction ID:
+- Payer account:
+- Payee account:
+- Gross amount:
+- Fee amount:
+- Net amount:
+- Transaction timestamp:
+- Settlement timestamp:
+
+Verification Checklist:
+- Match account IDs to case parties.
+- Match disputed amount to payment ledger.
+- Confirm no duplicate refund was already issued.
+
+Attachment Rules:
+- Attach screenshot and CSV export from payment ledger.
+- Include short narrative on mismatch if amount differs.
